@@ -97,7 +97,7 @@ fun BottomBar(
                 itemCount = routes.size,
                 indicator = { BottomNavIndicator() },
                 animSpec = springSpec,
-                modifier = Modifier.navigationBarsPadding(left = false, right = false)
+                modifier = Modifier.navigationBarsPadding(start = false, end = false)
             ) {
                 tabs.forEach { section ->
                     val selected = section == currentSection

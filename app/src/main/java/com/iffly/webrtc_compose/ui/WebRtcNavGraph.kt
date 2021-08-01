@@ -23,6 +23,10 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navigation
+import com.iffly.webrtc_compose.ui.home.CHAT_KEY
+import com.iffly.webrtc_compose.ui.home.HomeSections
+import com.iffly.webrtc_compose.ui.home.addHomeGraph
 
 
 /**
@@ -43,8 +47,13 @@ fun WebRtcNavGraph(
         navController = navController,
         startDestination = startDestination
     ) {
+        navigation(
+            route = MainDestinations.HOME_ROUTE,
+            startDestination = HomeSections[CHAT_KEY]!!.route
+        ) {
+            addHomeGraph()
 
-
+        }
     }
 }
 
