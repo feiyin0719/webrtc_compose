@@ -7,13 +7,19 @@ object Versions {
 object Libs {
     const val gradleVersion = "7.1.0-alpha05"
     const val koltinVersion = "1.5.10"
-
+    object Accompanist {
+        const val version = "0.10.0"
+        const val coil = "com.google.accompanist:accompanist-coil:$version"
+        const val insets = "com.google.accompanist:accompanist-insets:$version"
+        const val systemuicontroller = "com.google.accompanist:accompanist-systemuicontroller:$version"
+    }
     object AndroidX {
         const val coreKtx = "androidx.core:core-ktx:1.3.2"
         object Lifecycle {
             const val runtimeKtx =
                 "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
         }
+
         object Compose {
             const val snapshot = ""
             const val version = "1.0.0-rc01"
@@ -29,10 +35,17 @@ object Libs {
             const val iconsExtended = "androidx.compose.material:material-icons-extended:$version"
             const val uiTest = "androidx.compose.ui:ui-test-junit4:$version"
 
-            object Activity {
-                const val activityCompose = "androidx.activity:activity-compose:1.3.0-rc01"
-            }
 
+
+
+        }
+        object Activity {
+            const val activityCompose = "androidx.activity:activity-compose:1.3.0-rc01"
+        }
+
+        object Navigation {
+            const val navigationCompose = "androidx.navigation:navigation-compose:2.4.0-alpha01"
+            const val navigationKtx = "androidx.navigation:navigation-runtime-ktx:2.3.5"
         }
 
         object Test {
@@ -43,7 +56,7 @@ object Libs {
                 private const val version = "1.1.2"
                 const val junit = "androidx.test.ext:junit-ktx:$version"
             }
-            const val espressoCore = "androidx.test.espresso:espresso-core:3.2]3.0"
+            const val espressoCore = "androidx.test.espresso:espresso-core:3.2.0"
         }
     }
 

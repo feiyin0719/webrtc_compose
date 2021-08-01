@@ -6,13 +6,13 @@ plugins {
 }
 
 android {
-    compileSdk 31
+    compileSdk 30
     buildToolsVersion "31.0.0"
 
     defaultConfig {
         applicationId "com.iffly.webrtc_compose"
         minSdk 21
-        targetSdk 31
+        targetSdk 30
         versionCode 1
         versionName "1.0"
 
@@ -39,7 +39,14 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion compose_version
+        kotlinCompilerExtensionVersion Libs.AndroidX.Compose.version
+    }
+
+    packagingOptions {
+        // Multiple dependency bring these files in. Exclude them to enable
+        // our test APK to build (has no effect on our AARs)
+        excludes += "/META-INF/AL2.0"
+        excludes += "/META-INF/LGPL2.1"
     }
 }
 
@@ -56,7 +63,13 @@ dependencies {
     implementation Libs.AndroidX.Compose.iconsExtended
     implementation Libs.AndroidX.Compose.tooling
     implementation Libs.AndroidX.Lifecycle.runtimeKtx
-    implementation Libs.AndroidX.Compose.Activity.activityCompose
+    implementation Libs.AndroidX.Activity.activityCompose
+    implementation Libs.AndroidX.Navigation.navigationCompose
+    implementation Libs.AndroidX.Navigation.navigationKtx
+
+    implementation Libs.Accompanist.coil
+    implementation Libs.Accompanist.insets
+    implementation Libs.Accompanist.systemuicontroller
 
     androidTestImplementation Libs.JUnit.junit
     androidTestImplementation Libs.AndroidX.Test.runner
