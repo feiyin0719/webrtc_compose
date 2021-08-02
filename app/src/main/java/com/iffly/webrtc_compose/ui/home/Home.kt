@@ -6,6 +6,7 @@ import androidx.compose.material.icons.outlined.People
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.iffly.webrtc_compose.model.ChatItem
+import com.iffly.webrtc_compose.model.UserItem
 import com.iffly.webrtc_compose.ui.components.Sections
 
 val CHAT_KEY = "chats"
@@ -32,11 +33,15 @@ fun NavGraphBuilder.addHomeGraph(
 
     HomeSections[PEOPLE_KEY]?.let {
         composable(it.route) { from ->
-            ChatList(
-                list = listOf(
-                    ChatItem("1234", "user 1"),
-                    ChatItem("1235", "user 2")
-                )
+            UserList(
+                IntRange(0, 20)
+                    .map {
+                        UserItem(
+                            "$it",
+                            "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic.616pic.com%2Fys_bnew_img%2F00%2F04%2F45%2FNElJeK0ngd.jpg&refer=http%3A%2F%2Fpic.616pic.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1630481481&t=2b3253775dc674e0d5443dfd673d1aef",
+                            "${it}"
+                        )
+                    }.toList()
             )
         }
     }

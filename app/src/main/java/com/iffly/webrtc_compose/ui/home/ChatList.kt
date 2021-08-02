@@ -28,15 +28,13 @@ fun ChatList(list: List<ChatItem>) {
                     .fillMaxWidth()
                     .fillMaxHeight()
             ) {
-                items(list.toList()) {
+                items(list) {
                     ChatItemLayout(item = it)
 
                 }
             }
         }
-
     }
-
 }
 
 @Composable
@@ -76,8 +74,8 @@ fun ChatItemPre() {
 fun ChatPre() {
     WebrtcTheme() {
         ChatList(
-            IntRange(0,20).map {
-                ChatItem("$it","$it")
+            IntRange(0, 20).map {
+                ChatItem("$it", "$it")
             }.toList()
         )
     }

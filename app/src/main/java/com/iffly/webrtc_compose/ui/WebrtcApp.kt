@@ -2,8 +2,11 @@ package com.iffly.webrtc_compose.ui
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.iffly.webrtc_compose.ui.components.AppScaffold
@@ -14,17 +17,36 @@ import com.iffly.webrtc_compose.ui.theme.WebrtcTheme
 @Composable
 fun WebrtcApp() {
     ProvideWindowInsets {
-        WebrtcTheme() {
+        WebrtcTheme {
             val tabs = remember { HomeSections.values.toTypedArray() }
             val navController = rememberNavController()
-            AppScaffold(
-                bottomBar = { BottomBar(navController = navController, tabs = tabs) }
-            ) { innerPaddingModifier ->
-                WebRtcNavGraph(
-                    navController = navController,
-                    modifier = Modifier.padding(innerPaddingModifier)
-                )
+            ProvideNavController(navController = navController) {
+                AppScaffold(
+                    bottomBar = { BottomBar(navController = navController, tabs = tabs) }
+                ) { innerPaddingModifier ->
+                    WebRtcNavGraph(
+                        navController = navController,
+                        modifier = Modifier.padding(innerPaddingModifier)
+                    )
+                }
             }
+
         }
     }
+}
+
+@Composable
+private fun ProvideNavController(
+    navController: NavController,
+    content: @Composable () -> Unit
+) {
+
+    CompositionLocalProvider(
+        LocalNavController provides navController,
+        content = content
+    )
+}
+
+val LocalNavController = staticCompositionLocalOf<NavController?> {
+    null
 }
