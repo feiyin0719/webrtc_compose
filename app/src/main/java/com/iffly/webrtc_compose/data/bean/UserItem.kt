@@ -1,7 +1,7 @@
-package com.iffly.webrtc_compose.model
+package com.iffly.webrtc_compose.data.bean
 
 data class UserItem(
     val userId: String,
     val avatar: String,
-    val nickName: String
+    val phone: Boolean
 )

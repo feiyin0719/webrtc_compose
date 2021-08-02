@@ -26,7 +26,7 @@ android {
     compileSdkVersion 30
 
     defaultConfig {
-        applicationId 'com.example.jetsnack'
+        applicationId 'com.iffly.webrtc'
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
@@ -93,9 +93,13 @@ dependencies {
     implementation Libs.AndroidX.Compose.animation
     implementation Libs.AndroidX.Compose.iconsExtended
     implementation Libs.AndroidX.Compose.tooling
+    implementation Libs.AndroidX.Compose.liveData
 
     implementation Libs.Accompanist.insets
     implementation Libs.Accompanist.systemuicontroller
+
+    implementation Libs.Retrofit.runtime
+    implementation Libs.Retrofit.gson
 
     implementation Libs.Coil.coilCompose
 

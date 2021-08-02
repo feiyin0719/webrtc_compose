@@ -7,10 +7,17 @@ object Versions {
 object Libs {
     const val androidGradlePlugin = "com.android.tools.build:gradle:7.0.0"
 
+    object Retrofit {
+        const val version = "2.9.0"
+        const val runtime = "com.squareup.retrofit2:retrofit:$version"
+        const val gson = "com.squareup.retrofit2:converter-gson:$version"
+    }
+
     object Accompanist {
         const val version = "0.15.0"
         const val insets = "com.google.accompanist:accompanist-insets:$version"
-        const val systemuicontroller = "com.google.accompanist:accompanist-systemuicontroller:$version"
+        const val systemuicontroller =
+            "com.google.accompanist:accompanist-systemuicontroller:$version"
     }
 
     object Kotlin {
@@ -44,6 +51,7 @@ object Libs {
             const val tooling = "androidx.compose.ui:ui-tooling:${version}"
             const val iconsExtended = "androidx.compose.material:material-icons-extended:$version"
             const val uiTest = "androidx.compose.ui:ui-test-junit4:$version"
+            const val liveData = "androidx.compose.runtime:runtime-livedata:$version"
         }
 
         object Activity {
@@ -68,10 +76,12 @@ object Libs {
             private const val version = "1.3.0"
             const val runner = "androidx.test:runner:$version"
             const val rules = "androidx.test:rules:$version"
+
             object Ext {
                 private const val version = "1.1.2"
                 const val junit = "androidx.test.ext:junit-ktx:$version"
             }
+
             const val espressoCore = "androidx.test.espresso:espresso-core:3.2.0"
         }
     }
