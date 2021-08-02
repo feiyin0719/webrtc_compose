@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.jetsnack.ui.components
+package com.iffly.webrtc_compose.ui.components
 
 import androidx.compose.material.Divider
 import androidx.compose.runtime.Composable
@@ -26,7 +26,7 @@ import com.iffly.webrtc_compose.ui.theme.WebrtcTheme
 
 
 @Composable
-fun JetsnackDivider(
+fun AppDivider(
     modifier: Modifier = Modifier,
     color: Color = WebrtcTheme.colors.uiBorder.copy(alpha = DividerAlpha),
     thickness: Dp = 1.dp,

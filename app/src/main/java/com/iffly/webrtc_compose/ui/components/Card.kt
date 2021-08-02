@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.jetsnack.ui.components
+package com.iffly.webrtc_compose.ui.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.material.MaterialTheme
@@ -37,7 +37,7 @@ fun JetsnackCard(
     elevation: Dp = 1.dp,
     content: @Composable () -> Unit
 ) {
-    ComposeSurface(
+    AppSurface(
         modifier = modifier,
         shape = shape,
         color = color,

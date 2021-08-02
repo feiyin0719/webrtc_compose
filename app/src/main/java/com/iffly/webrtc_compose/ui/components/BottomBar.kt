@@ -40,7 +40,6 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.jetsnack.ui.components.ComposeSurface
 import com.google.accompanist.insets.navigationBarsPadding
 import com.iffly.webrtc_compose.ui.theme.WebrtcTheme
 
@@ -83,7 +82,7 @@ fun BottomBar(
 
         val currentSectionIndex = sections.indexOfFirst { it.route == currentRoute }
         val currentSection = sections[currentSectionIndex]
-        ComposeSurface(
+        AppSurface(
             color = color,
             contentColor = contentColor
         ) {

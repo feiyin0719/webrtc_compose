@@ -31,11 +31,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.iffly.webrtc_compose.ui.components.diagonalGradientTint
+import com.iffly.webrtc_compose.ui.components.fadeInDiagonalGradientBorder
+import com.iffly.webrtc_compose.ui.components.offsetGradientBackground
 import com.iffly.webrtc_compose.ui.theme.WebrtcTheme
 
 
 @Composable
-fun JetsnackGradientTintedIconButton(
+fun GradientTintedIconButton(
     imageVector: ImageVector,
     onClick: () -> Unit,
     contentDescription: String?,

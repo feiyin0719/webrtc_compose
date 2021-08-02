@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.jetsnack.ui.components
+package com.iffly.webrtc_compose.ui.components
 
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -32,7 +32,7 @@ import com.iffly.webrtc_compose.ui.theme.WebrtcTheme
  */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun JetsnackScaffold(
+fun AppScaffold(
     modifier: Modifier = Modifier,
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     topBar: @Composable (() -> Unit) = {},

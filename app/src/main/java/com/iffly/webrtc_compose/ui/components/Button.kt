@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.jetsnack.ui.components
+package com.iffly.webrtc_compose.ui.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -55,7 +55,7 @@ fun JetsnackButton(
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     content: @Composable RowScope.() -> Unit
 ) {
-    ComposeSurface(
+    AppSurface(
         shape = shape,
         color = Color.Transparent,
         contentColor = if (enabled) contentColor else disabledContentColor,

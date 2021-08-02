@@ -1,6 +1,8 @@
 package com.iffly.webrtc_compose.ui.home
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -10,21 +12,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.iffly.webrtc_compose.model.ChatItem
+import com.iffly.webrtc_compose.ui.components.AppSurface
+import com.iffly.webrtc_compose.ui.components.AppTitleBar
 import com.iffly.webrtc_compose.ui.theme.Typography
 import com.iffly.webrtc_compose.ui.theme.WebrtcTheme
 
 
 @Composable
-fun ChatList(list: Array<ChatItem>) {
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-    ) {
-        list.map {
-            ChatItemLayout(item = it)
+fun ChatList(list: List<ChatItem>) {
+    AppSurface(Modifier.fillMaxSize()) {
+        Column {
+            AppTitleBar(title = "chat")
+            LazyColumn(
+                Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+            ) {
+                items(list.toList()) {
+                    ChatItemLayout(item = it)
+
+                }
+            }
         }
+
     }
+
 }
 
 @Composable
@@ -38,7 +50,7 @@ fun ChatItemLayout(item: ChatItem) {
         Icon(
             imageVector = Icons.Outlined.Chat,
             contentDescription = "",
-            tint = WebrtcTheme.colors.iconInteractive,
+            tint = WebrtcTheme.colors.brand,
             modifier = Modifier.size(
                 50.dp, 50.dp
             )
@@ -54,16 +66,20 @@ fun ChatItemLayout(item: ChatItem) {
 @Preview
 @Composable
 fun ChatItemPre() {
-    ChatItemLayout(item = ChatItem("1234", "iffly"))
+    WebrtcTheme() {
+        ChatItemLayout(item = ChatItem("1234", "iffly"))
+    }
 }
 
 @Preview
 @Composable
 fun ChatPre() {
-    ChatList(
-        list = arrayOf(
-            ChatItem("1234", "iffly"),
-            ChatItem("1235", "iffly1")
+    WebrtcTheme() {
+        ChatList(
+            IntRange(0,20).map {
+                ChatItem("$it","$it")
+            }.toList()
         )
-    )
+    }
+
 }

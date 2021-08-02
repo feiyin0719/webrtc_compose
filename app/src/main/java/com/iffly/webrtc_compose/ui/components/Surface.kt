@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.jetsnack.ui.components
+package com.iffly.webrtc_compose.ui.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -41,7 +41,7 @@ import kotlin.math.ln
  * [com.example.jetsnack.ui.theme.JetsnackColors]
  */
 @Composable
-fun ComposeSurface(
+fun AppSurface(
     modifier: Modifier = Modifier,
     shape: Shape = RectangleShape,
     color: Color = WebrtcTheme.colors.uiBackground,
