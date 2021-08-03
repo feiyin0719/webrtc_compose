@@ -22,15 +22,15 @@ interface EngineCallback {
      */
     fun reject(type: Int)
 
-    fun disconnected(reason: CallEndReason?)
+    fun disconnected(reason: CallEndReason)
 
-    fun onSendIceCandidate(userId: String?, candidate: IceCandidate?)
+    fun onSendIceCandidate(userId: String, candidate: IceCandidate?)
 
-    fun onSendOffer(userId: String?, description: SessionDescription?)
+    fun onSendOffer(userId: String, description: SessionDescription?)
 
-    fun onSendAnswer(userId: String?, description: SessionDescription?)
+    fun onSendAnswer(userId: String, description: SessionDescription?)
 
-    fun onRemoteStream(userId: String?)
+    fun onRemoteStream(userId: String)
 
-    fun onDisconnected(userId: String?)
+    fun onDisconnected(userId: String)
 }
