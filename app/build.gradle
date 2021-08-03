@@ -102,6 +102,9 @@ dependencies {
     implementation Libs.Retrofit.gson
 
     implementation Libs.Coil.coilCompose
+    implementation project(path: ':rtc_chat')
+    implementation 'org.java-websocket:Java-WebSocket:1.4.0'
+    implementation 'com.alibaba:fastjson:1.2.23'
 
     androidTestImplementation Libs.JUnit.junit
     androidTestImplementation Libs.AndroidX.Test.runner

@@ -16,7 +16,7 @@ class SkyEngineKit {
     var isOutGoing = false
         private set
 
-    fun sendRefuseOnPermissionDenied(room: String?, inviteId: String?) {
+    fun sendRefuseOnPermissionDenied(room: String, inviteId: String) {
         // 未初始化
         if (avEngineKit == null) {
             Log.e(TAG, "startOutCall error,please init first")
@@ -29,7 +29,7 @@ class SkyEngineKit {
         }
     }
 
-    fun sendDisconnected(room: String?, toId: String?, isCrashed: Boolean) {
+    fun sendDisconnected(room: String, toId: String, isCrashed: Boolean) {
         // 未初始化
         if (avEngineKit == null) {
             Log.e(TAG, "startOutCall error,please init first")
@@ -172,9 +172,9 @@ class SkyEngineKit {
         private const val TAG = "dds_AVEngineKit"
         private var avEngineKit: SkyEngineKit? = null
         fun Instance(): SkyEngineKit {
-            var `var`: SkyEngineKit
-            return if (avEngineKit.also { `var` = it!! } != null) {
-                `var`
+            var skyEngineKit: SkyEngineKit
+            return if (avEngineKit.also { skyEngineKit = it!! } != null) {
+                skyEngineKit
             } else {
                 throw NotInitializedException()
             }
