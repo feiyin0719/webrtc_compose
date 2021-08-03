@@ -7,53 +7,53 @@ interface IEngine {
     /**
      * 初始化
      */
-    fun init(callback: EngineCallback?)
+    fun init(callback: EngineCallback)
 
     /**
      * 加入房間
      */
-    fun joinRoom(userIds: List<String?>?)
+    fun joinRoom(userIds: List<String>)
 
     /**
      * 有人进入房间
      */
-    fun userIn(userId: String?)
+    fun userIn(userId: String)
 
     /**
      * 用户拒绝
      * @param userId userId
      * @param type type
      */
-    fun userReject(userId: String?, type: Int)
+    fun userReject(userId: String, type: Int)
 
     /**
      * 用户网络断开
      * @param userId userId
      * @param reason
      */
-    fun disconnected(userId: String?, reason: CallEndReason?)
+    fun disconnected(userId: String, reason: CallEndReason)
 
     /**
      * receive Offer
      */
-    fun receiveOffer(userId: String?, description: String?)
+    fun receiveOffer(userId: String, description: String)
 
     /**
      * receive Answer
      */
-    fun receiveAnswer(userId: String?, sdp: String?)
+    fun receiveAnswer(userId: String, sdp: String)
 
     /**
      * receive IceCandidate
      */
-    fun receiveIceCandidate(userId: String?, id: String?, label: Int, candidate: String?)
+    fun receiveIceCandidate(userId: String, id: String, label: Int, candidate: String)
 
     /**
      * 离开房间
      *
      * @param userId userId
      */
-    fun leaveRoom(userId: String?)
+    fun leaveRoom(userId: String)
 
     /**
      * 开启本地预览
@@ -78,7 +78,7 @@ interface IEngine {
     /**
      * 开始远端预览
      */
-    fun setupRemoteVideo(userId: String?, isO: Boolean): View?
+    fun setupRemoteVideo(userId: String, isO: Boolean): View?
 
     /**
      * 关闭远端预览

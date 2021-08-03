@@ -9,7 +9,7 @@ class ProxyVideoSink : VideoSink {
         const val TAG = "dds_ProxyVideoSink"
     }
 
-    private var target: VideoSink? = null
+    var target: VideoSink? = null
         set(value) {
             field = value
         }
