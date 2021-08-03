@@ -19,6 +19,7 @@ import com.iffly.webrtc_compose.Versions
 
 buildscript {
     repositories {
+        jcenter()
         google()
         mavenCentral()
     }
@@ -34,6 +35,7 @@ plugins {
 
 subprojects {
     repositories {
+        jcenter()
         google()
         mavenCentral()
 

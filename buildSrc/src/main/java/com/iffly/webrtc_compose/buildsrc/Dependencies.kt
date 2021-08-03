@@ -84,6 +84,11 @@ object Libs {
 
             const val espressoCore = "androidx.test.espresso:espresso-core:3.2.0"
         }
+
+        object Appcompat {
+            const val version = "1.2.0"
+            const val appCompat = "androidx.appcompat:appcompat:$version"
+        }
     }
 
     object JUnit {
@@ -93,5 +98,15 @@ object Libs {
 
     object Coil {
         const val coilCompose = "io.coil-kt:coil-compose:1.3.0"
+    }
+
+    object Material {
+        const val version = "1.3.0"
+        const val material = "com.google.android.material:material:$version"
+    }
+
+    object Webrtc {
+        const val version = "1.0.32006"
+        const val webRct = "org.webrtc:google-webrtc:$version"
     }
 }

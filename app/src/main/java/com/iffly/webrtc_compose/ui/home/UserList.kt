@@ -24,22 +24,24 @@ import com.iffly.webrtc_compose.viewmodel.home.UserViewModel
 fun UserScreen(viewModel: UserViewModel = viewModel()) {
     val userResponse: List<UserItem>?
             by viewModel.users.observeAsState(emptyList())
-    userResponse?.let {
-        UserList(it)
-    }
+    UserList(userResponse)
+
 
 }
 
 @Composable
-fun UserList(peoples: List<UserItem>) {
+fun UserList(peoples: List<UserItem>?) {
 
     Column {
         AppTitleBar(title = "user")
-        LazyColumn(Modifier.fillMaxSize()) {
-            items(peoples) {
-                UserItemLayout(user = it)
+        peoples?.let {
+            LazyColumn(Modifier.fillMaxSize()) {
+                items(it) {
+                    UserItemLayout(user = it)
+                }
             }
         }
+
     }
 }
 
