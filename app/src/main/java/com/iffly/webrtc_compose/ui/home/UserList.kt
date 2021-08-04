@@ -3,7 +3,10 @@ package com.iffly.webrtc_compose.ui.home
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Chat
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -12,9 +15,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.iffly.webrtc_compose.data.bean.UserItem
-import com.iffly.webrtc_compose.data.repo.net.ServiceCreator
 import com.iffly.webrtc_compose.ui.LocalNavController
-import com.iffly.webrtc_compose.ui.components.AppImage
+import com.iffly.webrtc_compose.ui.components.AppSurface
 import com.iffly.webrtc_compose.ui.components.AppTitleBar
 import com.iffly.webrtc_compose.ui.theme.Typography
 import com.iffly.webrtc_compose.ui.theme.WebrtcTheme
@@ -31,17 +33,20 @@ fun UserScreen(viewModel: UserViewModel = viewModel()) {
 
 @Composable
 fun UserList(peoples: List<UserItem>?) {
+    AppSurface(Modifier.fillMaxSize()) {
+        Column {
+            AppTitleBar(title = "user")
+            peoples?.let {
+                LazyColumn(
 
-    Column {
-        AppTitleBar(title = "user")
-        peoples?.let {
-            LazyColumn(Modifier.fillMaxSize()) {
-                items(it) {
-                    UserItemLayout(user = it)
+                ) {
+                    items(it) {
+                        UserItemLayout(user = it)
+                    }
                 }
             }
-        }
 
+        }
     }
 }
 
@@ -54,9 +59,10 @@ fun UserItemLayout(user: UserItem) {
             .wrapContentHeight()
             .padding(10.dp)
     ) {
-        AppImage(
-            ServiceCreator.url + "/" + user.avatar,
-            contentDescription = "${user.userId}",
+        Icon(
+            imageVector = Icons.Outlined.Chat,
+            contentDescription = "",
+            tint = WebrtcTheme.colors.brand,
             modifier = Modifier.size(
                 50.dp, 50.dp
             )

@@ -3,6 +3,8 @@ package com.iffly.webrtc_compose.ui.theme
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.darkColors
+import androidx.compose.material.lightColors
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -73,7 +75,7 @@ fun WebrtcTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable
 
     ProvideWebRtcColors(colors) {
         MaterialTheme(
-            colors = debugColors(darkTheme),
+            colors = AppColors(darkTheme, colors),
             typography = Typography,
             shapes = Shapes,
             content = content
@@ -225,21 +227,20 @@ fun ProvideWebRtcColors(
  * A Material [Colors] implementation which sets all colors to [debugColor] to discourage usage of
  * [MaterialTheme.colors] in preference to [WebrtcTheme.colors].
  */
-fun debugColors(
+fun AppColors(
     darkTheme: Boolean,
-    debugColor: Color = Color.Magenta
-) = Colors(
-    primary = debugColor,
-    primaryVariant = debugColor,
-    secondary = debugColor,
-    secondaryVariant = debugColor,
-    background = debugColor,
-    surface = debugColor,
-    error = debugColor,
-    onPrimary = debugColor,
-    onSecondary = debugColor,
-    onBackground = debugColor,
-    onSurface = debugColor,
-    onError = debugColor,
-    isLight = !darkTheme
-)
+    webrtcColors: WebrtcColors
+) = if (darkTheme) darkColors(
+    primary = webrtcColors.brand,
+    secondary = webrtcColors.brandSecondary,
+    background = webrtcColors.uiBackground,
+    error = webrtcColors.error,
+
+    ) else {
+    lightColors(
+        primary = webrtcColors.brand,
+        secondary = webrtcColors.brandSecondary,
+        background = webrtcColors.uiBackground,
+        error = webrtcColors.error,
+    )
+}

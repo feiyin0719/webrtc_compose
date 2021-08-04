@@ -25,7 +25,7 @@ import com.iffly.webrtc_compose.ui.theme.WebrtcTheme
 
 @Composable
 
-fun JetsnackButton(
+fun AppButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,

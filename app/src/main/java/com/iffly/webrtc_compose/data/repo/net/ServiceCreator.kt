@@ -8,6 +8,14 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object ServiceCreator {
+
+    //    private final static String IP = "192.168.2.111";
+    const val IP = "42.192.40.58:5000"
+
+    private const val HOST = "http://$IP/"
+
+    // 信令地址
+    const val WS = "ws://$IP/ws"
     private const val _url = "http://42.192.40.58:5000"
     val url get() = _url
     private val okHttpClient by lazy { OkHttpClient().newBuilder() }

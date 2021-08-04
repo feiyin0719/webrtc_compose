@@ -22,11 +22,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.iffly.webrtc_compose.ui.home.CHAT_KEY
 import com.iffly.webrtc_compose.ui.home.HomeSections
 import com.iffly.webrtc_compose.ui.home.addHomeGraph
+import com.iffly.webrtc_compose.ui.login.LOGIN_ROUTE
+import com.iffly.webrtc_compose.ui.login.LoginScreen
 
 
 /**
@@ -34,6 +37,7 @@ import com.iffly.webrtc_compose.ui.home.addHomeGraph
  */
 object MainDestinations {
     const val HOME_ROUTE = "home"
+    const val LOGIN_ROUTE = "login"
 
 }
 
@@ -41,18 +45,25 @@ object MainDestinations {
 fun WebRtcNavGraph(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    startDestination: String = MainDestinations.HOME_ROUTE,
+    startDestination: String = MainDestinations.LOGIN_ROUTE,
 ) {
     NavHost(
         navController = navController,
         startDestination = startDestination
     ) {
         navigation(
+            route = MainDestinations.LOGIN_ROUTE,
+            startDestination = LOGIN_ROUTE
+        ) {
+            composable(route = LOGIN_ROUTE) {
+                LoginScreen()
+            }
+        }
+        navigation(
             route = MainDestinations.HOME_ROUTE,
             startDestination = HomeSections[CHAT_KEY]!!.route
         ) {
             addHomeGraph()
-
         }
     }
 }
