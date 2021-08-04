@@ -155,7 +155,7 @@ class MyWebSocket(serverUri: URI?, private val iEvent: IEvent) : WebSocketClient
             val id = data["id"] as String?
             val label = data["label"] as Int
             val candidate = data["candidate"] as String?
-            if (userID != null && id != null)
+            if (userID != null && id != null && candidate != null)
                 iEvent.onIceCandidate(userID, id, label, candidate)
         }
     }
@@ -165,7 +165,7 @@ class MyWebSocket(serverUri: URI?, private val iEvent: IEvent) : WebSocketClient
         if (data != null) {
             val sdp = data["sdp"] as String?
             val userID = data["fromID"] as String?
-            if (userID != null)
+            if (userID != null && sdp != null)
                 iEvent.onAnswer(userID, sdp)
         }
     }
@@ -175,7 +175,7 @@ class MyWebSocket(serverUri: URI?, private val iEvent: IEvent) : WebSocketClient
         if (data != null) {
             val sdp = data["sdp"] as String?
             val userID = data["fromID"] as String?
-            if (userID != null)
+            if (userID != null && sdp != null)
                 iEvent.onOffer(userID, sdp)
         }
     }

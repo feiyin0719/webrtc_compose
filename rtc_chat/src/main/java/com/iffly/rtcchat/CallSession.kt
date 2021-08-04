@@ -40,14 +40,14 @@ class CallSession(context: Context, roomId: String, audioOnly: Boolean, event: I
     private var mUserIDList: List<String>? = null
 
     // 单聊对方Id/群聊邀请人
-    var mTargetId: String? = null
+    lateinit var mTargetId: String
 
     // 房间Id
     var roomId: String
         private set
 
     // myId
-    var mMyId: String? = null
+    lateinit var mMyId: String
 
     // 房间大小
     private var mRoomSize = 0
@@ -63,14 +63,14 @@ class CallSession(context: Context, roomId: String, audioOnly: Boolean, event: I
 
     // ----------------------------------------各种控制--------------------------------------------
     // 创建房间
-    fun createHome(room: String?, roomSize: Int) {
+    fun createHome(room: String, roomSize: Int) {
         executor.execute {
             mEvent?.createRoom(room, roomSize)
         }
     }
 
     // 加入房间
-    fun joinHome(roomId: String?) {
+    fun joinHome(roomId: String) {
         executor.execute {
             state = CallState.Connecting
             Log.d(TAG, "joinHome mEvent = $mEvent")
@@ -91,7 +91,7 @@ class CallSession(context: Context, roomId: String, audioOnly: Boolean, event: I
     }
 
     // 发送响铃回复
-    fun sendRingBack(targetId: String?, room: String?) {
+    fun sendRingBack(targetId: String, room: String) {
         executor.execute {
             mEvent?.sendRingBack(targetId, room)
         }
@@ -106,7 +106,7 @@ class CallSession(context: Context, roomId: String, audioOnly: Boolean, event: I
     }
 
     // 发送忙时拒绝
-    fun sendBusyRefuse(room: String?, targetId: String?) {
+    fun sendBusyRefuse(room: String, targetId: String) {
         executor.execute {
             mEvent?.sendRefuse(room, targetId, RefuseType.Busy.ordinal)
         }
@@ -118,7 +118,7 @@ class CallSession(context: Context, roomId: String, audioOnly: Boolean, event: I
         executor.execute {
             if (mEvent != null) {
                 // 取消拨出
-                val list: MutableList<String?> = ArrayList()
+                val list: MutableList<String> = ArrayList()
                 list.add(mTargetId)
                 mEvent.sendCancel(roomId, list)
             }
@@ -192,7 +192,7 @@ class CallSession(context: Context, roomId: String, audioOnly: Boolean, event: I
 
     //------------------------------------receive---------------------------------------------------
     // 加入房间成功
-    fun onJoinHome(myId: String?, users: String, roomSize: Int) {
+    fun onJoinHome(myId: String, users: String, roomSize: Int) {
         // 开始计时
         mRoomSize = roomSize
         startTime = 0
@@ -209,7 +209,7 @@ class CallSession(context: Context, roomId: String, audioOnly: Boolean, event: I
                 // 发送邀请
                 if (!isComing) {
                     if (roomSize == 2) {
-                        val inviteList: MutableList<String?> = ArrayList()
+                        val inviteList: MutableList<String> = ArrayList()
                         inviteList.add(mTargetId)
                         mEvent!!.sendInvite(roomId, inviteList, isAudioOnly)
                     }
@@ -308,7 +308,7 @@ class CallSession(context: Context, roomId: String, audioOnly: Boolean, event: I
         return iEngine!!.setupRemoteVideo(userId!!, isOverlay)
     }
 
-    fun setTargetId(targetIds: String?) {
+    fun setTargetId(targetIds: String) {
         mTargetId = targetIds
     }
 
