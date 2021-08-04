@@ -27,7 +27,7 @@ object SocketManager : IEvent {
     //===========================================================================================
     var userState = 0
         private set
-    private var myId: String? = null
+    private lateinit var myId: String
     private val handler = Handler(Looper.getMainLooper())
 
 
@@ -89,74 +89,74 @@ object SocketManager : IEvent {
     }
 
     // ======================================================================================
-    fun createRoom(room: String?, roomSize: Int) {
+    fun createRoom(room: String, roomSize: Int) {
         if (webSocket != null) {
             webSocket!!.createRoom(room, roomSize, myId)
         }
     }
 
-    fun sendInvite(room: String?, users: List<String?>?, audioOnly: Boolean) {
+    fun sendInvite(room: String, users: List<String?>?, audioOnly: Boolean) {
         if (webSocket != null) {
             webSocket!!.sendInvite(room, myId, users, audioOnly)
         }
     }
 
-    fun sendLeave(room: String?, userId: String?) {
+    fun sendLeave(room: String, userId: String) {
         if (webSocket != null) {
             webSocket!!.sendLeave(myId, room, userId)
         }
     }
 
-    fun sendRingBack(targetId: String?, room: String?) {
+    fun sendRingBack(targetId: String, room: String) {
         if (webSocket != null) {
             webSocket!!.sendRing(myId, targetId, room)
         }
     }
 
-    fun sendRefuse(room: String?, inviteId: String?, refuseType: Int) {
+    fun sendRefuse(room: String, inviteId: String, refuseType: Int) {
         if (webSocket != null) {
             webSocket!!.sendRefuse(room, inviteId, myId, refuseType)
         }
     }
 
-    fun sendCancel(mRoomId: String?, userIds: List<String?>?) {
+    fun sendCancel(mRoomId: String, userIds: List<String>) {
         if (webSocket != null) {
             webSocket!!.sendCancel(mRoomId, myId, userIds)
         }
     }
 
-    fun sendJoin(room: String?) {
+    fun sendJoin(room: String) {
         if (webSocket != null) {
             webSocket!!.sendJoin(room, myId)
         }
     }
 
-    fun sendMeetingInvite(userList: String?) {}
-    fun sendOffer(userId: String?, sdp: String?) {
+    fun sendMeetingInvite(userList: String) {}
+    fun sendOffer(userId: String, sdp: String) {
         if (webSocket != null) {
             webSocket!!.sendOffer(myId, userId, sdp)
         }
     }
 
-    fun sendAnswer(userId: String?, sdp: String?) {
+    fun sendAnswer(userId: String, sdp: String) {
         if (webSocket != null) {
             webSocket!!.sendAnswer(myId, userId, sdp)
         }
     }
 
-    fun sendIceCandidate(userId: String?, id: String?, label: Int, candidate: String?) {
+    fun sendIceCandidate(userId: String, id: String, label: Int, candidate: String) {
         if (webSocket != null) {
             webSocket!!.sendIceCandidate(myId, userId, id, label, candidate)
         }
     }
 
-    fun sendTransAudio(userId: String?) {
+    fun sendTransAudio(userId: String) {
         if (webSocket != null) {
             webSocket!!.sendTransAudio(myId, userId)
         }
     }
 
-    fun sendDisconnect(room: String?, userId: String?) {
+    fun sendDisconnect(room: String, userId: String) {
         if (webSocket != null) {
             webSocket!!.sendDisconnect(room, myId, userId)
         }

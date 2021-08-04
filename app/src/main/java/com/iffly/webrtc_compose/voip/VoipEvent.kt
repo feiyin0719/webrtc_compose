@@ -12,52 +12,52 @@ import com.iffly.webrtc_compose.voip.VoipEvent
 
 
 class VoipEvent : ISkyEvent {
-    private val ringPlayer: AsyncPlayer
-    override fun createRoom(room: String?, roomSize: Int) {
+    private val ringPlayer: AsyncPlayer = AsyncPlayer(null)
+    override fun createRoom(room: String, roomSize: Int) {
         SocketManager.createRoom(room, roomSize)
     }
 
-    override fun sendInvite(room: String?, userIds: List<String?>?, audioOnly: Boolean) {
+    override fun sendInvite(room: String, userIds: List<String>, audioOnly: Boolean) {
         SocketManager.sendInvite(room, userIds, audioOnly)
     }
 
-    override fun sendRefuse(room: String?, inviteId: String?, refuseType: Int) {
+    override fun sendRefuse(room: String, inviteId: String, refuseType: Int) {
         SocketManager.sendRefuse(room, inviteId, refuseType)
     }
 
-    override fun sendTransAudio(toId: String?) {
+    override fun sendTransAudio(toId: String) {
         SocketManager.sendTransAudio(toId)
     }
 
-    override fun sendDisConnect(room: String?, toId: String?, isCrashed: Boolean) {
+    override fun sendDisConnect(room: String, toId: String, isCrashed: Boolean) {
         SocketManager.sendDisconnect(room, toId)
     }
 
-    override fun sendCancel(mRoomId: String?, toIds: List<String?>?) {
+    override fun sendCancel(mRoomId: String, toIds: List<String>) {
         SocketManager.sendCancel(mRoomId, toIds)
     }
 
-    override fun sendJoin(room: String?) {
+    override fun sendJoin(room: String) {
         SocketManager.sendJoin(room)
     }
 
-    override fun sendRingBack(targetId: String?, room: String?) {
+    override fun sendRingBack(targetId: String, room: String) {
         SocketManager.sendRingBack(targetId, room)
     }
 
-    override fun sendLeave(room: String?, userId: String?) {
+    override fun sendLeave(room: String, userId: String) {
         SocketManager.sendLeave(room, userId)
     }
 
-    override fun sendOffer(userId: String?, sdp: String?) {
+    override fun sendOffer(userId: String, sdp: String) {
         SocketManager.sendOffer(userId, sdp)
     }
 
-    override fun sendAnswer(userId: String?, sdp: String?) {
+    override fun sendAnswer(userId: String, sdp: String) {
         SocketManager.sendAnswer(userId, sdp)
     }
 
-    override fun sendIceCandidate(userId: String?, id: String?, label: Int, candidate: String?) {
+    override fun sendIceCandidate(userId: String, id: String, label: Int, candidate: String) {
         SocketManager.sendIceCandidate(userId, id, label, candidate)
     }
 
@@ -89,7 +89,4 @@ class VoipEvent : ISkyEvent {
         private const val TAG = "VoipEvent"
     }
 
-    init {
-        ringPlayer = AsyncPlayer(null)
-    }
 }
