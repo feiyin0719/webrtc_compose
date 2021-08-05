@@ -19,12 +19,10 @@ package com.iffly.webrtc_compose.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavHostController
+import androidx.navigation.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navigation
 import com.iffly.webrtc_compose.ui.home.CHAT_KEY
 import com.iffly.webrtc_compose.ui.home.HomeSections
 import com.iffly.webrtc_compose.ui.home.addHomeGraph
@@ -75,3 +73,16 @@ fun WebRtcNavGraph(
  */
 private fun NavBackStackEntry.lifecycleIsResumed() =
     this.lifecycle.currentState == Lifecycle.State.RESUMED
+
+
+private val NavGraph.startDestination: NavDestination?
+    get() = findNode(startDestinationId)
+
+/**
+ * Copied from similar function in NavigationUI.kt
+ *
+ * https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:navigation/navigation-ui/src/main/java/androidx/navigation/ui/NavigationUI.kt
+ */
+public tailrec fun findStartDestination(graph: NavDestination): NavDestination {
+    return if (graph is NavGraph) findStartDestination(graph.startDestination!!) else graph
+}

@@ -109,4 +109,14 @@ object Libs {
         const val version = "1.0.32006"
         const val webRct = "org.webrtc:google-webrtc:$version"
     }
+
+    object WebSocket{
+        const val version = "1.4.0"
+        const val webSocket = "org.java-websocket:Java-WebSocket:$version"
+    }
+
+    object FastJson{
+        const val version = "1.2.23"
+        const val fastJson = "com.alibaba:fastjson:$version"
+    }
 }

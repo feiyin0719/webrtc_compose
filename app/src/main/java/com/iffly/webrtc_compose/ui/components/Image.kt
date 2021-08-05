@@ -1,5 +1,6 @@
 package com.iffly.webrtc_compose.ui.components
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.CircleShape
@@ -28,6 +29,34 @@ fun AppImage(
         Image(
             painter = rememberImagePainter(
                 data = imageUrl,
+                builder = {
+                    crossfade(true)
+                    placeholder(drawableResId = R.mipmap.ic_launcher)
+                }
+            ),
+            contentDescription = contentDescription,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop,
+        )
+    }
+}
+
+@Composable
+fun AppImage(
+    @DrawableRes imageId: Int,
+    contentDescription: String?,
+    modifier: Modifier = Modifier,
+    elevation: Dp = 0.dp
+) {
+    AppSurface(
+        color = Color.LightGray,
+        elevation = elevation,
+        shape = CircleShape,
+        modifier = modifier
+    ) {
+        Image(
+            painter = rememberImagePainter(
+                data = imageId,
                 builder = {
                     crossfade(true)
                     placeholder(drawableResId = R.mipmap.ic_launcher)

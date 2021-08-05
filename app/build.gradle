@@ -103,8 +103,10 @@ dependencies {
 
     implementation Libs.Coil.coilCompose
     implementation project(path: ':rtc_chat')
-    implementation 'org.java-websocket:Java-WebSocket:1.4.0'
-    implementation 'com.alibaba:fastjson:1.2.23'
+    implementation Libs.WebSocket.webSocket
+    implementation Libs.FastJson.fastJson
+    implementation Libs.AndroidX.Appcompat.appCompat
+    implementation Libs.Material.material
 
     androidTestImplementation Libs.JUnit.junit
     androidTestImplementation Libs.AndroidX.Test.runner

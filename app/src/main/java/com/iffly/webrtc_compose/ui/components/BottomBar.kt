@@ -41,6 +41,7 @@ import androidx.navigation.NavGraph
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.insets.navigationBarsPadding
+import com.iffly.webrtc_compose.ui.findStartDestination
 import com.iffly.webrtc_compose.ui.theme.WebrtcTheme
 
 
@@ -50,17 +51,7 @@ private val BottomNavLabelTransformOrigin = TransformOrigin(0f, 0.5f)
 private val BottomNavIndicatorShape = RoundedCornerShape(percent = 50)
 private val BottomNavigationItemPadding = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
 
-private val NavGraph.startDestination: NavDestination?
-    get() = findNode(startDestinationId)
 
-/**
- * Copied from similar function in NavigationUI.kt
- *
- * https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:navigation/navigation-ui/src/main/java/androidx/navigation/ui/NavigationUI.kt
- */
-private tailrec fun findStartDestination(graph: NavDestination): NavDestination {
-    return if (graph is NavGraph) findStartDestination(graph.startDestination!!) else graph
-}
 
 class Sections(val title: String, val icon: ImageVector, val route: String) {
 
@@ -134,7 +125,7 @@ fun BottomBar(
                                 navController.navigate(section.route) {
                                     launchSingleTop = true
                                     restoreState = true
-                                    popUpTo(findStartDestination(navController.graph).id) {
+                                    popUpTo(tabs[0].route) {
                                         saveState = true
                                     }
                                 }

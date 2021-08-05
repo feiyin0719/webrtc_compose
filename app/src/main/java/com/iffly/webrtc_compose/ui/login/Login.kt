@@ -21,23 +21,14 @@ import androidx.navigation.NavGraph
 import com.google.accompanist.insets.statusBarsPadding
 import com.iffly.webrtc_compose.ui.LocalNavController
 import com.iffly.webrtc_compose.ui.MainDestinations
+import com.iffly.webrtc_compose.ui.components.AndroidSurfaceView
 import com.iffly.webrtc_compose.ui.components.AppButton
 import com.iffly.webrtc_compose.ui.theme.WebrtcTheme
 import com.iffly.webrtc_compose.viewmodel.login.LoginViewModel
 
-val LOGIN_ROUTE = "login/login"
+const val LOGIN_ROUTE = "login/login"
 
-private val NavGraph.startDestination: NavDestination?
-    get() = findNode(startDestinationId)
 
-/**
- * Copied from similar function in NavigationUI.kt
- *
- * https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:navigation/navigation-ui/src/main/java/androidx/navigation/ui/NavigationUI.kt
- */
-private tailrec fun findStartDestination(graph: NavDestination): NavDestination {
-    return if (graph is NavGraph) findStartDestination(graph.startDestination!!) else graph
-}
 
 @Composable
 fun LoginScreen(loginViewModel: LoginViewModel = viewModel()) {
@@ -49,7 +40,7 @@ fun LoginScreen(loginViewModel: LoginViewModel = viewModel()) {
 
             navController?.navigate(MainDestinations.HOME_ROUTE) {
 
-                popUpTo(findStartDestination(navController.graph).id) {
+                popUpTo(LOGIN_ROUTE) {
                     inclusive = true
 
                 }

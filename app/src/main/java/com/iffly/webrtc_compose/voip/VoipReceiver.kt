@@ -3,8 +3,12 @@ package com.iffly.webrtc_compose.voip
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.media.AsyncPlayer
+import android.util.Log
 import com.iffly.rtcchat.SkyEngineKit
+import com.iffly.webrtc_compose.App
+import com.iffly.webrtc_compose.CallActivity
 
 
 class VoipReceiver : BroadcastReceiver() {
@@ -12,6 +16,7 @@ class VoipReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.action
         if (Utils.ACTION_VOIP_RECEIVER == action) {
+            Log.i("myyf", "rece call")
             val room = intent.getStringExtra("room")
             val audioOnly = intent.getBooleanExtra("audioOnly", true)
             val inviteId = intent.getStringExtra("inviteId")
@@ -22,6 +27,25 @@ class VoipReceiver : BroadcastReceiver() {
 
             if (inviteUserName == null) {
                 inviteUserName = "p2pChat"
+            }
+
+            val b = SkyEngineKit.Instance().startInCall(
+                App.instance!!,
+                room!!, inviteId!!, audioOnly
+            )
+
+            if (b) {
+                Log.i("myyf", "accept call")
+                App.instance?.otherUserId = inviteId
+
+                if (list.size == 1) {
+                    context.startActivity(Intent(context, CallActivity::class.java).apply {
+                        addFlags(FLAG_ACTIVITY_NEW_TASK)
+                    })
+
+                } else {
+                    // 群聊
+                }
             }
 //            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 //                if (com.iffly.webrtc_compose.util.Utils.isAppRunningForeground()) {
