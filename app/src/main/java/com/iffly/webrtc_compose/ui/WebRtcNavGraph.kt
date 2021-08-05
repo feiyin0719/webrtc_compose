@@ -23,8 +23,8 @@ import androidx.navigation.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.iffly.webrtc_compose.ui.home.CHAT_KEY
 import com.iffly.webrtc_compose.ui.home.HomeSections
+import com.iffly.webrtc_compose.ui.home.PEOPLE_KEY
 import com.iffly.webrtc_compose.ui.home.addHomeGraph
 import com.iffly.webrtc_compose.ui.login.LOGIN_ROUTE
 import com.iffly.webrtc_compose.ui.login.LoginScreen
@@ -59,7 +59,7 @@ fun WebRtcNavGraph(
         }
         navigation(
             route = MainDestinations.HOME_ROUTE,
-            startDestination = HomeSections[CHAT_KEY]!!.route
+            startDestination = HomeSections[PEOPLE_KEY]!!.route
         ) {
             addHomeGraph()
         }

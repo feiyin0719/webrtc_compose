@@ -27,11 +27,20 @@ class CallViewModel : ViewModel(), CallSessionCallback {
         } else {
             session.setSessionCallback(this)
             callState.postValue(CallState.Incoming)
+            handler.post {
+                val surfaceView: View? =
+                    SkyEngineKit.Instance().currentSession?.setupLocalVideo(false)
+
+                if (surfaceView != null && surfaceView is SurfaceView) {
+                    surfaceView.setZOrderMediaOverlay(true)
+                    localSurfaceState.postValue(surfaceView)
+                }
+            }
         }
     }
 
     override fun didCallEndWithReason(var1: CallEndReason?) {
-
+        closeState.postValue(true)
     }
 
     override fun didChangeState(var1: CallState?) {
@@ -79,7 +88,7 @@ class CallViewModel : ViewModel(), CallSessionCallback {
     }
 
     override fun didDisconnected(userId: String?) {
-
+        SkyEngineKit.Instance().endCall()
     }
 
     fun videoAnswerClick() {
@@ -97,6 +106,7 @@ class CallViewModel : ViewModel(), CallSessionCallback {
             val session = SkyEngineKit.Instance().currentSession
             if (session != null) {
                 SkyEngineKit.Instance().endCall()
+                closeState.postValue(true)
             }
         }
     }

@@ -6,14 +6,14 @@ import androidx.compose.material.icons.outlined.People
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.iffly.webrtc_compose.data.bean.ChatItem
-import com.iffly.webrtc_compose.data.bean.UserItem
 import com.iffly.webrtc_compose.ui.components.Sections
 
 val CHAT_KEY = "chats"
 val PEOPLE_KEY = "peoples"
 val HomeSections = mapOf<String, Sections>(
-    CHAT_KEY to Sections("chat", Icons.Outlined.Chat, "home/chat"),
-    PEOPLE_KEY to Sections("people", Icons.Outlined.People, "home/people")
+
+    PEOPLE_KEY to Sections("people", Icons.Outlined.People, "home/people"),
+    CHAT_KEY to Sections("chat", Icons.Outlined.Chat, "home/chat")
 
 )
 
@@ -21,6 +21,12 @@ val HomeSections = mapOf<String, Sections>(
 fun NavGraphBuilder.addHomeGraph(
 
 ) {
+    HomeSections[PEOPLE_KEY]?.let {
+        composable(it.route) { from ->
+            UserScreen()
+        }
+    }
+
     HomeSections[CHAT_KEY]?.let {
         composable(it.route) { from ->
             ChatList(
@@ -31,10 +37,5 @@ fun NavGraphBuilder.addHomeGraph(
         }
     }
 
-    HomeSections[PEOPLE_KEY]?.let {
-        composable(it.route) { from ->
-            UserScreen()
-        }
-    }
 
 }
