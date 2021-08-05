@@ -23,7 +23,6 @@ object ServiceCreator {
         val builder = Retrofit.Builder()
             .baseUrl(url)
             .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(LiveDataCallAdapterFactory())
         val dispatcher = Dispatcher()
         dispatcher.maxRequests = 1
 

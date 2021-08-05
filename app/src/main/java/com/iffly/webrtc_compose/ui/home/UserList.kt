@@ -14,6 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.iffly.webrtc_compose.data.bean.UserItem
 import com.iffly.webrtc_compose.ui.LocalNavController
 import com.iffly.webrtc_compose.ui.components.AppSurface
@@ -26,24 +28,38 @@ import com.iffly.webrtc_compose.viewmodel.home.UserViewModel
 fun UserScreen(viewModel: UserViewModel = viewModel()) {
     val userResponse: List<UserItem>?
             by viewModel.users.observeAsState(emptyList())
-    UserList(userResponse)
+    val loading by viewModel.loadingState.observeAsState(false)
+    UserList(userResponse, loading) {
+        viewModel.loadUser()
+    }
 
 
 }
 
 @Composable
-fun UserList(peoples: List<UserItem>?) {
+fun UserList(
+    peoples: List<UserItem>?,
+    isLoading: Boolean = false,
+    refreshListener: () -> Unit = {}
+) {
     AppSurface(Modifier.fillMaxSize()) {
         Column {
             AppTitleBar(title = "user")
             peoples?.let {
-                LazyColumn(
-
+                SwipeRefresh(
+                    state =
+                    rememberSwipeRefreshState(isRefreshing = isLoading),
+                    onRefresh = refreshListener
                 ) {
-                    items(it) {
-                        UserItemLayout(user = it)
+                    LazyColumn(
+
+                    ) {
+                        items(it) {
+                            UserItemLayout(user = it)
+                        }
                     }
                 }
+
             }
 
         }

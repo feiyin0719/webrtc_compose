@@ -84,6 +84,7 @@ dependencies {
     implementation Libs.AndroidX.Navigation.navigationCompose
     implementation Libs.AndroidX.ConstraintLayout.constraintLayoutCompose
 
+
     implementation Libs.AndroidX.Compose.runtime
     implementation Libs.AndroidX.Compose.foundation
     implementation Libs.AndroidX.Compose.layout
@@ -97,6 +98,7 @@ dependencies {
 
     implementation Libs.Accompanist.insets
     implementation Libs.Accompanist.systemuicontroller
+    implementation Libs.Accompanist.swipeRefresh
 
     implementation Libs.Retrofit.runtime
     implementation Libs.Retrofit.gson

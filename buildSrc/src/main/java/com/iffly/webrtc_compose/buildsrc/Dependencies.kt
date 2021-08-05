@@ -16,6 +16,7 @@ object Libs {
     object Accompanist {
         const val version = "0.15.0"
         const val insets = "com.google.accompanist:accompanist-insets:$version"
+        const val swipeRefresh = "com.google.accompanist:accompanist-swiperefresh:$version"
         const val systemuicontroller =
             "com.google.accompanist:accompanist-systemuicontroller:$version"
     }
@@ -110,12 +111,12 @@ object Libs {
         const val webRct = "org.webrtc:google-webrtc:$version"
     }
 
-    object WebSocket{
+    object WebSocket {
         const val version = "1.4.0"
         const val webSocket = "org.java-websocket:Java-WebSocket:$version"
     }
 
-    object FastJson{
+    object FastJson {
         const val version = "1.2.23"
         const val fastJson = "com.alibaba:fastjson:$version"
     }

@@ -22,9 +22,6 @@ class LiveDataCallAdapterFactory : CallAdapter.Factory() {
         }
         //获取returnType的class类型
         val returnClass = CallAdapter.Factory.getRawType(returnType)
-        if (returnClass != LiveData::class.java) {
-            throw IllegalArgumentException("返回值不是LiveData类型")
-        }
         //先解释一下getParameterUpperBound
         //官方例子
         //For example, index 1 of {@code Map<String, ? extends Runnable>} returns {@code Runnable}.
