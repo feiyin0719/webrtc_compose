@@ -16,25 +16,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavDestination
-import androidx.navigation.NavGraph
 import com.google.accompanist.insets.statusBarsPadding
 import com.iffly.webrtc_compose.ui.LocalNavController
 import com.iffly.webrtc_compose.ui.MainDestinations
-import com.iffly.webrtc_compose.ui.components.AndroidSurfaceView
 import com.iffly.webrtc_compose.ui.components.AppButton
 import com.iffly.webrtc_compose.ui.theme.WebrtcTheme
+import com.iffly.webrtc_compose.viewmodel.app.AppViewModel
+import com.iffly.webrtc_compose.viewmodel.app.LoginState
+import com.iffly.webrtc_compose.viewmodel.app.appViewModel
 import com.iffly.webrtc_compose.viewmodel.login.LoginViewModel
 
 const val LOGIN_ROUTE = "login/login"
 
 
-
 @Composable
 fun LoginScreen(loginViewModel: LoginViewModel = viewModel()) {
+    val appViewModel: AppViewModel = appViewModel()
     val name: String by loginViewModel.userName.observeAsState("")
-    val loginState: Int by loginViewModel.loginState.observeAsState(1)
-    if (loginState == 2) {
+    val loginState: LoginState by appViewModel.loginState.observeAsState(LoginState.Logout)
+    if (loginState == LoginState.Login) {
         val navController = LocalNavController.current
         LaunchedEffect(key1 = loginState, block = {
 

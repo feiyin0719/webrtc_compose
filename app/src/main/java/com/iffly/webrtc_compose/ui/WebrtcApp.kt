@@ -13,9 +13,11 @@ import com.iffly.webrtc_compose.ui.components.AppScaffold
 import com.iffly.webrtc_compose.ui.components.BottomBar
 import com.iffly.webrtc_compose.ui.home.HomeSections
 import com.iffly.webrtc_compose.ui.theme.WebrtcTheme
+import com.iffly.webrtc_compose.viewmodel.app.appViewModel
 
 @Composable
 fun WebrtcApp() {
+    val appViewModel = appViewModel()
     ProvideWindowInsets {
         WebrtcTheme {
             val tabs = remember { HomeSections.values.toTypedArray() }
