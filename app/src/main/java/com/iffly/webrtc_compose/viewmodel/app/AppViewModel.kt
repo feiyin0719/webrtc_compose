@@ -23,6 +23,10 @@ class AppViewModel : ViewModel(), IUserState {
     override fun userLogout() {
         loginState.postValue(LoginState.Logout)
     }
+
+    override fun onCleared() {
+        super.onCleared()
+    }
 }
 
 enum class LoginState {

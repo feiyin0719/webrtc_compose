@@ -12,18 +12,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.statusBarsPadding
 import com.iffly.rtcchat.CallState
 import com.iffly.webrtc_compose.R
 import com.iffly.webrtc_compose.ui.components.AndroidSurfaceView
 import com.iffly.webrtc_compose.ui.components.AppImage
-import com.iffly.webrtc_compose.viewmodel.call.CallViewModel
+import com.iffly.webrtc_compose.viewmodel.call.callViewModel
 
 @Composable
-fun CallScreen(callViewModel: CallViewModel = viewModel()) {
+fun CallScreen(outGoing: Boolean = false, userId: String = "") {
+    val callViewModel = callViewModel(outGoing = outGoing, userId = userId)
     val close by callViewModel.closeState.observeAsState(false)
+    val outGoing by callViewModel.outGoingState.observeAsState(false)
     if (close) {
         val activity = LocalContext.current
         LaunchedEffect(key1 = close) {
@@ -31,13 +32,13 @@ fun CallScreen(callViewModel: CallViewModel = viewModel()) {
                 activity.finish()
         }
     } else {
-
         val surfaceView by callViewModel.remoteSurfaceState.observeAsState(null)
         val callState by callViewModel.callState.observeAsState(CallState.Incoming)
         val localSurfaceView by callViewModel.localSurfaceState.observeAsState(null)
         CallContent(
             remoteSurfaceView = surfaceView,
             localSurfaceView = localSurfaceView,
+            outGoing,
             callState = callState,
             { callViewModel.videoAnswerClick() },
             {
@@ -53,6 +54,7 @@ fun CallScreen(callViewModel: CallViewModel = viewModel()) {
 fun CallContent(
     remoteSurfaceView: SurfaceView?,
     localSurfaceView: SurfaceView?,
+    outGoing: Boolean = false,
     callState: CallState,
     videoAnswerClick: () -> Unit,
     hangAnswerCLick: () -> Unit
@@ -120,7 +122,7 @@ fun CallContent(
                         hangAnswerCLick.invoke()
                     }
             )
-            if (callState == CallState.Incoming)
+            if (callState == CallState.Incoming && !outGoing)
                 AppImage(imageId = R.mipmap.av_video_answer,
                     contentDescription = "video_answer",
                     Modifier

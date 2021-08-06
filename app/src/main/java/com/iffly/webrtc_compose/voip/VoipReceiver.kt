@@ -3,7 +3,6 @@ package com.iffly.webrtc_compose.voip
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.media.AsyncPlayer
 import android.util.Log
 import com.iffly.rtcchat.SkyEngineKit
@@ -37,11 +36,10 @@ class VoipReceiver : BroadcastReceiver() {
             if (b) {
                 Log.i("myyf", "accept call")
                 App.instance?.otherUserId = inviteId
+                App.instance?.roomId = room
 
                 if (list.size == 1) {
-                    context.startActivity(Intent(context, CallActivity::class.java).apply {
-                        addFlags(FLAG_ACTIVITY_NEW_TASK)
-                    })
+                    CallActivity.startCallActivity(context = context)
 
                 } else {
                     // 群聊
