@@ -1,14 +1,16 @@
 package com.iffly.webrtc_compose.viewmodel.home
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.iffly.webrtc_compose.data.bean.UserItem
 import com.iffly.webrtc_compose.data.repo.net.UserRepo
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class UserViewModel : ViewModel() {
-    private val handler = Handler(Looper.getMainLooper())
+
     private val userReo = UserRepo()
 
     val loadingState = MutableLiveData(false)
@@ -27,9 +29,10 @@ class UserViewModel : ViewModel() {
         userReo.getUsers {
             users.postValue(it)
         }
-        handler.postDelayed({
+        GlobalScope.launch(Dispatchers.IO) {
+            delay(1000)
             loadingState.postValue(false)
-        }, 1000)
+        }
 
     }
 }

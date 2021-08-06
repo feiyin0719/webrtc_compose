@@ -1,7 +1,5 @@
 package com.iffly.webrtc_compose.viewmodel.call
 
-import android.os.Handler
-import android.os.Looper
 import android.view.SurfaceView
 import android.view.View
 import androidx.lifecycle.MutableLiveData
@@ -10,10 +8,12 @@ import com.iffly.rtcchat.CallEndReason
 import com.iffly.rtcchat.CallSessionCallback
 import com.iffly.rtcchat.CallState
 import com.iffly.rtcchat.SkyEngineKit
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 
 class CallViewModel : ViewModel(), CallSessionCallback {
-    val handler = Handler(Looper.getMainLooper())
     val closeState = MutableLiveData(false)
     val remoteSurfaceState: MutableLiveData<SurfaceView?> = MutableLiveData(null)
     val localSurfaceState: MutableLiveData<SurfaceView?> = MutableLiveData(null)
@@ -27,7 +27,7 @@ class CallViewModel : ViewModel(), CallSessionCallback {
         } else {
             session.setSessionCallback(this)
             callState.postValue(CallState.Incoming)
-            handler.post {
+            GlobalScope.launch(Dispatchers.Main) {
                 val surfaceView: View? =
                     SkyEngineKit.Instance().currentSession?.setupLocalVideo(false)
 
@@ -55,7 +55,7 @@ class CallViewModel : ViewModel(), CallSessionCallback {
     }
 
     override fun didCreateLocalVideoTrack() {
-        handler.post {
+        GlobalScope.launch(Dispatchers.Main) {
             val surfaceView: View? = SkyEngineKit.Instance().currentSession?.setupLocalVideo(true)
 
             if (surfaceView != null && surfaceView is SurfaceView) {
@@ -67,7 +67,7 @@ class CallViewModel : ViewModel(), CallSessionCallback {
     }
 
     override fun didReceiveRemoteVideoTrack(userId: String?) {
-        handler.post {
+        GlobalScope.launch(Dispatchers.Main) {
             val surfaceView: View? =
                 SkyEngineKit.Instance().currentSession?.setupRemoteVideo(userId, false)
             if (surfaceView != null) {
@@ -92,7 +92,7 @@ class CallViewModel : ViewModel(), CallSessionCallback {
     }
 
     fun videoAnswerClick() {
-        handler.post {
+        GlobalScope.launch(Dispatchers.Main) {
             val session = SkyEngineKit.Instance().currentSession
             if (session != null && session.state == CallState.Incoming) {
                 session.joinHome(session.roomId)
@@ -102,7 +102,7 @@ class CallViewModel : ViewModel(), CallSessionCallback {
     }
 
     fun hangAnswerClick() {
-        handler.post {
+        GlobalScope.launch(Dispatchers.Main) {
             val session = SkyEngineKit.Instance().currentSession
             if (session != null) {
                 SkyEngineKit.Instance().endCall()
