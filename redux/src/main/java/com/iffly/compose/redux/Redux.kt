@@ -3,8 +3,8 @@ package com.iffly.compose.redux
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.*
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class StoreViewModel(val list: List<Reducer<Any, Any>>) : ViewModel() {
     private val _reducerMap = mutableMapOf<Class<*>, Reducer<Any, Any>>()
@@ -25,7 +25,12 @@ class StoreViewModel(val list: List<Reducer<Any, Any>>) : ViewModel() {
                 state?.let { _state ->
                     _state.value?.let { _value ->
                         val newState =
-                            viewModelScope.async { it.reduce(_value, action = action) }.await()
+                            withContext(viewModelScope.coroutineContext) {
+                                it.reduce(
+                                    _value,
+                                    action = action
+                                )
+                            }
                         _state.postValue(newState)
                     }
                 }
