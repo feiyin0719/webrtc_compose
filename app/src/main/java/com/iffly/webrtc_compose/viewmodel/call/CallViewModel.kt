@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.iffly.rtcchat.*
 import com.iffly.webrtc_compose.App
@@ -23,17 +24,18 @@ class CallViewModel(var outGoing: Boolean = false, val userId: String = "") : Vi
     val localSurfaceState: MutableLiveData<SurfaceView?> = MutableLiveData(null)
     val callState = MutableLiveData<CallState>()
     val outGoingState = MutableLiveData(outGoing)
+    val initCompleteState = MutableLiveData(false)
+
 
     init {
-
         val session = SkyEngineKit.Instance().currentSession
         if (!outGoing) {
             if (session == null) {
                 closeState.postValue(true)
             } else {
-                session.setSessionCallback(this)
                 callState.postValue(CallState.Incoming)
-                GlobalScope.launch(Dispatchers.Main) {
+                initCompleteState.postValue(true)
+                viewModelScope.launch(Dispatchers.Main) {
                     val surfaceView: View? =
                         SkyEngineKit.Instance().currentSession?.setupLocalVideo(false)
 
@@ -44,7 +46,8 @@ class CallViewModel(var outGoing: Boolean = false, val userId: String = "") : Vi
                 }
             }
         } else {
-            GlobalScope.launch(Dispatchers.Main) {
+            callState.postValue(CallState.Incoming)
+            viewModelScope.launch(Dispatchers.Main) {
                 SkyEngineKit.init(VoipEvent())
                 val room = UUID.randomUUID().toString() + System.currentTimeMillis()
                 val b: Boolean =
@@ -52,13 +55,14 @@ class CallViewModel(var outGoing: Boolean = false, val userId: String = "") : Vi
                 if (!b) {
                     closeState.postValue(true)
                 } else {
+
                     App.instance?.roomId = room
                     App.instance?.otherUserId = userId
                     val session: CallSession? = SkyEngineKit.Instance().currentSession
                     if (session == null) {
                         closeState.postValue(true)
                     } else {
-                        session.setSessionCallback(this@CallViewModel)
+                        initCompleteState.postValue(true)
                     }
                 }
             }
@@ -141,10 +145,6 @@ class CallViewModel(var outGoing: Boolean = false, val userId: String = "") : Vi
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        SkyEngineKit.Instance().currentSession?.setSessionCallback(null)
-    }
 }
 
 class CallViewModelFactory(val outGoing: Boolean, val userId: String) :

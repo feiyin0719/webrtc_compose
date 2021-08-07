@@ -12,10 +12,6 @@ import com.iffly.webrtc_compose.socket.SocketManager
 class AppViewModel : ViewModel(), IUserState {
     val loginState = MutableLiveData(LoginState.Logout)
 
-    init {
-        SocketManager.addUserStateCallback(this)
-    }
-
     override fun userLogin() {
         loginState.postValue(LoginState.Login)
     }
@@ -24,9 +20,6 @@ class AppViewModel : ViewModel(), IUserState {
         loginState.postValue(LoginState.Logout)
     }
 
-    override fun onCleared() {
-        super.onCleared()
-    }
 }
 
 enum class LoginState {

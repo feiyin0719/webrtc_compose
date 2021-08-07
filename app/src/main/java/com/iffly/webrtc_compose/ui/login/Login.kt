@@ -37,15 +37,13 @@ fun LoginScreen(loginViewModel: LoginViewModel = viewModel()) {
     if (loginState == LoginState.Login) {
         val navController = LocalNavController.current
         LaunchedEffect(key1 = loginState, block = {
+            if (loginState == LoginState.Login)
+                navController?.navigate(MainDestinations.HOME_ROUTE) {
+                    popUpTo(LOGIN_ROUTE) {
+                        inclusive = true
 
-            navController?.navigate(MainDestinations.HOME_ROUTE) {
-
-                popUpTo(LOGIN_ROUTE) {
-                    inclusive = true
-
+                    }
                 }
-
-            }
         })
     } else {
         LoginContent(name = name,

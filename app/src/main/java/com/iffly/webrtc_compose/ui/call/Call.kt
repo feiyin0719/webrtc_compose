@@ -8,13 +8,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.statusBarsPadding
+import com.iffly.rtcchat.CallEndReason
+import com.iffly.rtcchat.CallSessionCallback
 import com.iffly.rtcchat.CallState
+import com.iffly.rtcchat.SkyEngineKit
 import com.iffly.webrtc_compose.R
 import com.iffly.webrtc_compose.ui.components.AndroidSurfaceView
 import com.iffly.webrtc_compose.ui.components.AppImage
@@ -28,13 +32,55 @@ fun CallScreen(outGoing: Boolean = false, userId: String = "") {
     if (close) {
         val activity = LocalContext.current
         LaunchedEffect(key1 = close) {
-            if (activity is Activity)
+            if (close && activity is Activity)
                 activity.finish()
         }
     } else {
+        val callSessionCallback by rememberUpdatedState(object : CallSessionCallback {
+            override fun didCallEndWithReason(var1: CallEndReason?) {
+                callViewModel.didCallEndWithReason(var1)
+            }
+
+            override fun didChangeState(var1: CallState?) {
+                callViewModel.didChangeState(var1)
+            }
+
+            override fun didChangeMode(isAudioOnly: Boolean) {
+                callViewModel.didChangeMode(isAudioOnly = isAudioOnly)
+            }
+
+            override fun didCreateLocalVideoTrack() {
+                callViewModel.didCreateLocalVideoTrack()
+            }
+
+            override fun didReceiveRemoteVideoTrack(userId: String?) {
+                callViewModel.didReceiveRemoteVideoTrack(userId = userId)
+            }
+
+            override fun didUserLeave(userId: String?) {
+                callViewModel.didUserLeave(userId = userId)
+            }
+
+            override fun didError(error: String?) {
+                callViewModel.didError(error)
+            }
+
+            override fun didDisconnected(userId: String?) {
+                callViewModel.didDisconnected(userId)
+            }
+
+        })
         val surfaceView by callViewModel.remoteSurfaceState.observeAsState(null)
         val callState by callViewModel.callState.observeAsState(CallState.Incoming)
         val localSurfaceView by callViewModel.localSurfaceState.observeAsState(null)
+        val initComplete by callViewModel.initCompleteState.observeAsState(false)
+        LaunchedEffect(initComplete) {
+            if (initComplete) {
+                val session = SkyEngineKit.Instance().currentSession
+                session?.setSessionCallback(callSessionCallback)
+            }
+        }
+
         CallContent(
             remoteSurfaceView = surfaceView,
             localSurfaceView = localSurfaceView,
