@@ -8,20 +8,14 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Chat
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.iffly.webrtc_compose.data.bean.ChatItem
-import com.iffly.webrtc_compose.data.bean.UserItem
 import com.iffly.webrtc_compose.ui.components.AppSurface
 import com.iffly.webrtc_compose.ui.components.AppTitleBar
 import com.iffly.webrtc_compose.ui.theme.Typography
 import com.iffly.webrtc_compose.ui.theme.WebrtcTheme
-import com.iffly.webrtc_compose.viewmodel.home.UserViewModel
-
 
 
 @Composable

@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,27 +15,32 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.insets.statusBarsPadding
+import com.iffly.compose.redux.storeViewModel
+import com.iffly.webrtc_compose.reducer.app.LoginAction
+import com.iffly.webrtc_compose.reducer.app.LoginState
+import com.iffly.webrtc_compose.reducer.app.LoginStateEnum
+import com.iffly.webrtc_compose.reducer.login.LoginViewModel
 import com.iffly.webrtc_compose.ui.LocalNavController
 import com.iffly.webrtc_compose.ui.MainDestinations
 import com.iffly.webrtc_compose.ui.components.AppButton
 import com.iffly.webrtc_compose.ui.theme.WebrtcTheme
-import com.iffly.webrtc_compose.viewmodel.app.AppViewModel
-import com.iffly.webrtc_compose.viewmodel.app.LoginState
-import com.iffly.webrtc_compose.viewmodel.app.appViewModel
-import com.iffly.webrtc_compose.viewmodel.login.LoginViewModel
 
 const val LOGIN_ROUTE = "login/login"
 
 
 @Composable
 fun LoginScreen(loginViewModel: LoginViewModel = viewModel()) {
-    val appViewModel: AppViewModel = appViewModel()
-    val name: String by loginViewModel.userName.observeAsState("")
-    val loginState: LoginState by appViewModel.loginState.observeAsState(LoginState.Logout)
-    if (loginState == LoginState.Login) {
+    val store = storeViewModel()
+    var name by remember {
+        mutableStateOf("")
+    }
+
+    val loginState by store.getState(LoginState::class.java)
+        .observeAsState(LoginState(LoginStateEnum.Logout, ""))
+    if (loginState.state == LoginStateEnum.Login) {
         val navController = LocalNavController.current
-        LaunchedEffect(key1 = loginState, block = {
-            if (loginState == LoginState.Login)
+        LaunchedEffect(key1 = loginState.state, block = {
+            if (loginState.state == LoginStateEnum.Login)
                 navController?.navigate(MainDestinations.HOME_ROUTE) {
                     popUpTo(LOGIN_ROUTE) {
                         inclusive = true
@@ -47,10 +50,11 @@ fun LoginScreen(loginViewModel: LoginViewModel = viewModel()) {
         })
     } else {
         LoginContent(name = name,
-            onNameChanged = { loginViewModel.onNameChanged(it) }) {
-            loginViewModel.loginClick()
+            onNameChanged = { name = it }) {
+            store.dispatch(LoginAction(LoginAction.LoginActionValue.Login, name))
         }
     }
+
 }
 
 @Composable
