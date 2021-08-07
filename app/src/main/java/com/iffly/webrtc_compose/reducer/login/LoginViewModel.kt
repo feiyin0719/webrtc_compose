@@ -1,4 +1,4 @@
-package com.iffly.webrtc_compose.viewmodel.login
+package com.iffly.webrtc_compose.reducer.login
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

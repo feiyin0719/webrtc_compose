@@ -9,6 +9,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.view.WindowCompat
 import com.google.accompanist.insets.ProvideWindowInsets
+import com.iffly.compose.redux.storeViewModel
+import com.iffly.webrtc_compose.reducer.call.CallReducer
 import com.iffly.webrtc_compose.ui.call.CallScreen
 import com.iffly.webrtc_compose.ui.theme.WebrtcTheme
 
@@ -18,6 +20,7 @@ class CallActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         val outGoing: Boolean = intent.getBooleanExtra(OUTGOING_KEY, false)
         setContent {
+            val store = storeViewModel(listOf(CallReducer()))
             ProvideWindowInsets {
                 WebrtcTheme {
                     CallScreen(

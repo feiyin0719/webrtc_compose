@@ -104,11 +104,13 @@ dependencies {
     implementation Libs.Retrofit.gson
 
     implementation Libs.Coil.coilCompose
-    implementation project(path: ':rtc_chat')
     implementation Libs.WebSocket.webSocket
     implementation Libs.FastJson.fastJson
     implementation Libs.AndroidX.Appcompat.appCompat
     implementation Libs.Material.material
+
+    implementation project(path: ':rtc_chat')
+    implementation project(path: ':redux')
 
     androidTestImplementation Libs.JUnit.junit
     androidTestImplementation Libs.AndroidX.Test.runner
