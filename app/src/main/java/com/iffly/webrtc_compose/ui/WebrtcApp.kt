@@ -26,11 +26,11 @@ fun WebrtcApp() {
                 val appViewModel = appViewModel()
                 val userStateCallback by rememberUpdatedState(object : IUserState {
                     override fun userLogin() {
-                        appViewModel.userLogin()
+                        appViewModel.changeToLogin()
                     }
 
                     override fun userLogout() {
-                        appViewModel.userLogout()
+                        appViewModel.changeToLogout()
                     }
 
                 })

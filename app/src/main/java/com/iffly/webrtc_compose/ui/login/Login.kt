@@ -48,7 +48,7 @@ fun LoginScreen(loginViewModel: LoginViewModel = viewModel()) {
     } else {
         LoginContent(name = name,
             onNameChanged = { loginViewModel.onNameChanged(it) }) {
-            loginViewModel.loginClick()
+            loginViewModel.login()
         }
     }
 }

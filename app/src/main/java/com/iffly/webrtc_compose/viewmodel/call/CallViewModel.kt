@@ -12,7 +12,6 @@ import com.iffly.rtcchat.*
 import com.iffly.webrtc_compose.App
 import com.iffly.webrtc_compose.voip.VoipEvent
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -89,7 +88,7 @@ class CallViewModel(var outGoing: Boolean = false, val userId: String = "") : Vi
     }
 
     override fun didCreateLocalVideoTrack() {
-        GlobalScope.launch(Dispatchers.Main) {
+        viewModelScope.launch(Dispatchers.Main) {
             val surfaceView: View? = SkyEngineKit.Instance().currentSession?.setupLocalVideo(true)
 
             if (surfaceView != null && surfaceView is SurfaceView) {
@@ -101,7 +100,7 @@ class CallViewModel(var outGoing: Boolean = false, val userId: String = "") : Vi
     }
 
     override fun didReceiveRemoteVideoTrack(userId: String?) {
-        GlobalScope.launch(Dispatchers.Main) {
+        viewModelScope.launch(Dispatchers.Main) {
             val surfaceView: View? =
                 SkyEngineKit.Instance().currentSession?.setupRemoteVideo(userId, false)
             if (surfaceView != null) {
@@ -126,7 +125,7 @@ class CallViewModel(var outGoing: Boolean = false, val userId: String = "") : Vi
     }
 
     fun videoAnswerClick() {
-        GlobalScope.launch(Dispatchers.Main) {
+        viewModelScope.launch(Dispatchers.Main) {
             val session = SkyEngineKit.Instance().currentSession
             if (session != null && session.state == CallState.Incoming) {
                 session.joinHome(session.roomId)
@@ -136,7 +135,7 @@ class CallViewModel(var outGoing: Boolean = false, val userId: String = "") : Vi
     }
 
     fun hangAnswerClick() {
-        GlobalScope.launch(Dispatchers.Main) {
+        viewModelScope.launch(Dispatchers.Main) {
             val session = SkyEngineKit.Instance().currentSession
             if (session != null) {
                 SkyEngineKit.Instance().endCall()

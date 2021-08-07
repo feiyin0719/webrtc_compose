@@ -9,7 +9,7 @@ import com.iffly.webrtc_compose.socket.SocketManager
 class LoginViewModel : ViewModel() {
     var userName = MutableLiveData("")
 
-    fun loginClick() {
+    fun login() {
         App.instance?.username = userName.value.toString()
         SocketManager.connect(ServiceCreator.WS, userName.value.toString(), 0)
     }

@@ -2,10 +2,10 @@ package com.iffly.webrtc_compose.viewmodel.home
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.iffly.webrtc_compose.data.bean.UserItem
 import com.iffly.webrtc_compose.data.repo.net.UserRepo
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -19,18 +19,26 @@ class UserViewModel : ViewModel() {
     val users = MutableLiveData<List<UserItem>>()
 
     init {
-        userReo.getUsers {
-            users.postValue(it)
+        viewModelScope.launch {
+            try {
+                val list = userReo.getUsers()
+                users.postValue(list)
+            } catch (e: Exception) {
+
+            }
         }
     }
 
     fun loadUser() {
         loadingState.postValue(true)
-        userReo.getUsers {
-            users.postValue(it)
-        }
-        GlobalScope.launch(Dispatchers.IO) {
+
+        viewModelScope.launch(Dispatchers.IO) {
             delay(1000)
+            try {
+                val list = userReo.getUsers()
+                users.postValue(list)
+            } catch (e: Exception) {
+            }
             loadingState.postValue(false)
         }
 

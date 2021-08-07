@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.iffly.webrtc_compose.App
@@ -60,10 +61,13 @@ fun UserList(
                 SwipeRefresh(
                     state =
                     rememberSwipeRefreshState(isRefreshing = isLoading),
-                    onRefresh = refreshListener
+                    onRefresh = refreshListener,
+                    Modifier.fillMaxSize()
+                        .navigationBarsPadding()
                 ) {
                     LazyColumn(
-
+                        Modifier.fillMaxSize()
+                            .navigationBarsPadding()
                     ) {
                         items(it) {
                             UserItemLayout(

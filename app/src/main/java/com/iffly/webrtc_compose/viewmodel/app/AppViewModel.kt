@@ -6,17 +6,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.iffly.webrtc_compose.socket.IUserState
-import com.iffly.webrtc_compose.socket.SocketManager
 
-class AppViewModel : ViewModel(), IUserState {
+class AppViewModel : ViewModel() {
     val loginState = MutableLiveData(LoginState.Logout)
 
-    override fun userLogin() {
+    fun changeToLogin() {
         loginState.postValue(LoginState.Login)
     }
 
-    override fun userLogout() {
+    fun changeToLogout() {
         loginState.postValue(LoginState.Logout)
     }
 
