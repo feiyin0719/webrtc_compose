@@ -24,11 +24,16 @@ class UserReducer :
                 return state.copy()
             }
             UserViewAction.UserViewActionValue.Refresh -> {
-                val list = withContext(Dispatchers.IO) {
-                    delay(1000)
-                    UserRepo.getUsers()
+                try {
+                    val list = withContext(Dispatchers.IO) {
+                        delay(1000)
+                        UserRepo.getUsers()
+                    }
+                    return state.copy(loading = false, list = list)
+                } catch (e: Exception) {
+                    return state.copy(loading = false)
                 }
-                return state.copy(loading = false, list = list)
+
             }
             UserViewAction.UserViewActionValue.ChangeLadoing -> {
                 return state.copy(loading = true)
