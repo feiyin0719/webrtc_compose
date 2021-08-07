@@ -4,9 +4,8 @@ import com.iffly.compose.redux.Reducer
 import com.iffly.webrtc_compose.data.bean.UserItem
 import com.iffly.webrtc_compose.data.repo.net.UserRepo
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 
 
 data class UserViewState(val loading: Boolean, val list: List<UserItem>)
@@ -25,11 +24,16 @@ class UserReducer :
                 return state.copy()
             }
             UserViewAction.UserViewActionValue.Refresh -> {
-                val list = GlobalScope.async(Dispatchers.IO) {
-                    delay(1000)
-                    return@async UserRepo.getUsers()
-                }.await()
-                return state.copy(loading = false, list = list)
+                try {
+                    val list = withContext(Dispatchers.IO) {
+                        delay(1000)
+                        UserRepo.getUsers()
+                    }
+                    return state.copy(loading = false, list = list)
+                } catch (e: Exception) {
+                    return state.copy(loading = false)
+                }
+
             }
             UserViewAction.UserViewActionValue.ChangeLadoing -> {
                 return state.copy(loading = true)
