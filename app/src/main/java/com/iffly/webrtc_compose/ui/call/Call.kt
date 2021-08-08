@@ -203,6 +203,18 @@ fun CallScreen(outGoing: Boolean = false, userId: String = "") {
             }
         }
 
+        val switchCameraClick = remember {
+            {
+                store.dispatch(
+                    CallViewAction(
+                        CallViewAction.CallViewActionValue.SwitchCamera,
+                        mapOf()
+                    )
+                )
+
+            }
+        }
+
         CallContent(
             callViewSate.userid,
             remoteSurfaceView = surfaceView,
@@ -212,7 +224,8 @@ fun CallScreen(outGoing: Boolean = false, userId: String = "") {
             answerClick,
             hangAnswerClick,
             audioAnswerClick,
-            isAudioOnly = callViewSate.audioOnly
+            isAudioOnly = callViewSate.audioOnly,
+            switchCameraClick
         )
     }
 
@@ -229,7 +242,8 @@ fun CallContent(
     videoAnswerClick: () -> Unit,
     hangAnswerClick: () -> Unit,
     audioAnswerClick: () -> Unit = {},
-    isAudioOnly: Boolean = false
+    isAudioOnly: Boolean = false,
+    switchCameraClick: () -> Unit = {}
 ) {
     if (callState == CallState.Connected) {
         remoteSurfaceView?.let {
@@ -315,6 +329,16 @@ fun CallContent(
                 .fillMaxWidth()
 
         ) {
+            if (callState == CallState.Connected && !isAudioOnly) {
+                AppImage(imageId = R.mipmap.av_camera, contentDescription = "camera",
+                    Modifier
+                        .size(75.dp, 75.dp)
+                        .clickable {
+                            switchCameraClick.invoke()
+                        }
+                )
+            }
+
             AppImage(imageId = R.mipmap.av_hang_answer, contentDescription = "hang_answer",
                 Modifier
                     .size(75.dp, 75.dp)
@@ -332,16 +356,28 @@ fun CallContent(
                         }
                 )
             if ((callState == CallState.Connected || callState == CallState.Incoming) && !isAudioOnly) {
-                AppImage(
-                    imageId = R.mipmap.av_audio_trans,
-                    contentDescription = "audio_answer",
-                    Modifier
-                        .size(75.dp, 75.dp)
-                        .clickable {
-                            audioAnswerClick.invoke()
-                        },
-                    backgroundColor = Color.Green
-                )
+                if (callState != CallState.Connected)
+                    AppImage(
+                        imageId = R.mipmap.av_audio_trans,
+                        contentDescription = "audio_answer",
+                        Modifier
+                            .size(75.dp, 75.dp)
+                            .clickable {
+                                audioAnswerClick.invoke()
+                            },
+                        backgroundColor = Color.Green
+                    )
+                else {
+                    AppImage(
+                        imageId = R.mipmap.av_phone,
+                        contentDescription = "audio_answer",
+                        Modifier
+                            .size(75.dp, 75.dp)
+                            .clickable {
+                                audioAnswerClick.invoke()
+                            },
+                    )
+                }
             }
         }
 

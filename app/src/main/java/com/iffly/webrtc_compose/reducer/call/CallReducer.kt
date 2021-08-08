@@ -10,6 +10,7 @@ import com.iffly.webrtc_compose.App
 import com.iffly.webrtc_compose.voip.VoipEvent
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.withContext
+import org.webrtc.SurfaceViewRenderer
 import java.util.*
 
 
@@ -40,7 +41,8 @@ data class CallViewAction(
         Disconnect,
         Accept,
         Hang,
-        ChangeAudio
+        ChangeAudio,
+        SwitchCamera
     }
 
     companion object {
@@ -132,6 +134,10 @@ class CallReducer :
                     localSurfaceView = null,
                     remoteSurfaceView = null
                 )
+            }
+            CallViewAction.CallViewActionValue.SwitchCamera -> {
+                SkyEngineKit.Instance().currentSession?.switchCamera()
+                return state.copy()
             }
             else -> state.copy()
         }
