@@ -2,13 +2,17 @@ package com.iffly.webrtc_compose.ui.call
 
 import android.app.Activity
 import android.view.SurfaceView
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.statusBarsPadding
@@ -22,6 +26,8 @@ import com.iffly.webrtc_compose.reducer.call.CallViewAction
 import com.iffly.webrtc_compose.reducer.call.CallViewSate
 import com.iffly.webrtc_compose.ui.components.AndroidSurfaceView
 import com.iffly.webrtc_compose.ui.components.AppImage
+import com.iffly.webrtc_compose.ui.theme.Typography
+import com.iffly.webrtc_compose.ui.theme.WebrtcTheme
 
 @Composable
 fun CallScreen(outGoing: Boolean = false, userId: String = "") {
@@ -43,9 +49,19 @@ fun CallScreen(outGoing: Boolean = false, userId: String = "") {
             )
         }
     }
-    val callViewSate by store.getState(CallViewSate::class.java).observeAsState()
-    val close = callViewSate!!.closeState
-    val outGoing = callViewSate!!.outGoingState
+    val callViewSate by store.getState(CallViewSate::class.java).observeAsState(
+        CallViewSate(
+            "",
+            false,
+            null,
+            null,
+            CallState.Incoming,
+            false,
+            false
+        )
+    )
+    val close = callViewSate.closeState
+    val outGoing = callViewSate.outGoingState
     if (close) {
         val activity = LocalContext.current
         LaunchedEffect(close) {
@@ -143,10 +159,10 @@ fun CallScreen(outGoing: Boolean = false, userId: String = "") {
             }
 
         })
-        val surfaceView = callViewSate!!.remoteSurfaceView
-        val callState = callViewSate!!.callState
-        val localSurfaceView = callViewSate!!.localSurfaceView
-        val initComplete = callViewSate!!.initCallComplete
+        val surfaceView = callViewSate.remoteSurfaceView
+        val callState = callViewSate.callState
+        val localSurfaceView = callViewSate.localSurfaceView
+        val initComplete = callViewSate.initCallComplete
         LaunchedEffect(initComplete) {
             if (initComplete) {
                 val session = SkyEngineKit.Instance().currentSession
@@ -154,31 +170,62 @@ fun CallScreen(outGoing: Boolean = false, userId: String = "") {
             }
         }
 
-        CallContent(
-            remoteSurfaceView = surfaceView,
-            localSurfaceView = localSurfaceView,
-            outGoing,
-            callState = callState,
+        val answerClick = remember {
             {
                 store.dispatch(
                     CallViewAction(
                         CallViewAction.CallViewActionValue.Accept,
-                        mapOf(
-
-                        )
+                        mapOf()
                     )
                 )
-            },
+            }
+        }
+        val hangAnswerClick = remember {
             {
                 store.dispatch(
                     CallViewAction(
                         CallViewAction.CallViewActionValue.Hang,
-                        mapOf(
-
-                        )
+                        mapOf()
                     )
                 )
             }
+        }
+
+        val audioAnswerClick = remember {
+            {
+                store.dispatch(
+                    CallViewAction(
+                        CallViewAction.CallViewActionValue.ChangeAudio,
+                        mapOf()
+                    )
+                )
+
+            }
+        }
+
+        val switchCameraClick = remember {
+            {
+                store.dispatch(
+                    CallViewAction(
+                        CallViewAction.CallViewActionValue.SwitchCamera,
+                        mapOf()
+                    )
+                )
+
+            }
+        }
+
+        CallContent(
+            callViewSate.userid,
+            remoteSurfaceView = surfaceView,
+            localSurfaceView = localSurfaceView,
+            outGoing,
+            callState = callState,
+            answerClick,
+            hangAnswerClick,
+            audioAnswerClick,
+            isAudioOnly = callViewSate.audioOnly,
+            switchCameraClick
         )
     }
 
@@ -187,12 +234,16 @@ fun CallScreen(outGoing: Boolean = false, userId: String = "") {
 
 @Composable
 fun CallContent(
+    userId: String,
     remoteSurfaceView: SurfaceView?,
     localSurfaceView: SurfaceView?,
     outGoing: Boolean = false,
     callState: CallState,
     videoAnswerClick: () -> Unit,
-    hangAnswerCLick: () -> Unit
+    hangAnswerClick: () -> Unit,
+    audioAnswerClick: () -> Unit = {},
+    isAudioOnly: Boolean = false,
+    switchCameraClick: () -> Unit = {}
 ) {
     if (callState == CallState.Connected) {
         remoteSurfaceView?.let {
@@ -213,13 +264,13 @@ fun CallContent(
         ) {
             Box(
                 contentAlignment = Alignment.Center,
-                modifier = if (callState == CallState.Connected) Modifier
+                modifier = if (callState == CallState.Connected && remoteSurfaceView != null) Modifier
                     .size(
                         100.dp,
                         180.dp
                     )
                     .statusBarsPadding()
-                    .offset(0.dp, 20.dp)
+                    .offset(-20.dp, 20.dp)
                 else
                     Modifier
                         .fillMaxSize()
@@ -234,6 +285,34 @@ fun CallContent(
         }
     }
 
+    if (isAudioOnly) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .navigationBarsPadding()
+                .statusBarsPadding()
+                .fillMaxSize()
+                .background(WebrtcTheme.colors.uiBackground)
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.wrapContentSize()
+            ) {
+                AppImage(
+                    imageId = R.mipmap.av_default_header,
+                    contentDescription = "hang_answer",
+                    Modifier
+                        .size(150.dp, 150.dp)
+                )
+                Text(
+                    text = userId,
+                    style = Typography.h3,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+        }
+    }
 
     Column(
         verticalArrangement = Arrangement.Bottom, modifier = Modifier
@@ -250,11 +329,21 @@ fun CallContent(
                 .fillMaxWidth()
 
         ) {
+            if (callState == CallState.Connected && !isAudioOnly) {
+                AppImage(imageId = R.mipmap.av_camera, contentDescription = "camera",
+                    Modifier
+                        .size(75.dp, 75.dp)
+                        .clickable {
+                            switchCameraClick.invoke()
+                        }
+                )
+            }
+
             AppImage(imageId = R.mipmap.av_hang_answer, contentDescription = "hang_answer",
                 Modifier
                     .size(75.dp, 75.dp)
                     .clickable {
-                        hangAnswerCLick.invoke()
+                        hangAnswerClick.invoke()
                     }
             )
             if (callState == CallState.Incoming && !outGoing)
@@ -266,6 +355,30 @@ fun CallContent(
                             videoAnswerClick.invoke()
                         }
                 )
+            if ((callState == CallState.Connected || callState == CallState.Incoming) && !isAudioOnly) {
+                if (callState != CallState.Connected)
+                    AppImage(
+                        imageId = R.mipmap.av_audio_trans,
+                        contentDescription = "audio_answer",
+                        Modifier
+                            .size(75.dp, 75.dp)
+                            .clickable {
+                                audioAnswerClick.invoke()
+                            },
+                        backgroundColor = Color.Green
+                    )
+                else {
+                    AppImage(
+                        imageId = R.mipmap.av_phone,
+                        contentDescription = "audio_answer",
+                        Modifier
+                            .size(75.dp, 75.dp)
+                            .clickable {
+                                audioAnswerClick.invoke()
+                            },
+                    )
+                }
+            }
         }
 
     }

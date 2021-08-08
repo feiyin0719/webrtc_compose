@@ -274,6 +274,12 @@ class WebRtcEngine : IEngine, IPeerEvent {
             try {
                 cameraVideoCapturer.switchCamera(object : CameraSwitchHandler {
                     override fun onCameraSwitchDone(isFrontCamera: Boolean) {
+                        if(isFrontCamera){
+                            localRenderer?.setMirror(true)
+                        }
+                        else{
+                            localRenderer?.setMirror(false)
+                        }
                         isSwitch = false
                     }
 

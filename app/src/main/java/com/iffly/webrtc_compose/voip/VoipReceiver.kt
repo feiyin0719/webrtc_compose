@@ -15,7 +15,6 @@ class VoipReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.action
         if (Utils.ACTION_VOIP_RECEIVER == action) {
-            Log.i("myyf", "rece call")
             val room = intent.getStringExtra("room")
             val audioOnly = intent.getBooleanExtra("audioOnly", true)
             val inviteId = intent.getStringExtra("inviteId")
