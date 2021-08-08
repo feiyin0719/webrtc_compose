@@ -34,7 +34,6 @@ fun LoginScreen(loginViewModel: LoginViewModel = viewModel()) {
     var name by remember {
         mutableStateOf("")
     }
-
     val loginState by store.getState(LoginState::class.java)
         .observeAsState(LoginState(LoginStateEnum.Logout, ""))
     if (loginState.state == LoginStateEnum.Login) {
@@ -49,12 +48,17 @@ fun LoginScreen(loginViewModel: LoginViewModel = viewModel()) {
                 }
         })
     } else {
-        LoginContent(name = name,
-            onNameChanged = { name = it }) {
-            store.dispatch(LoginAction(LoginAction.LoginActionValue.Login, name))
+        val loginClick = remember {
+            {
+                store.dispatch(LoginAction(LoginAction.LoginActionValue.Login, name))
+            }
         }
+        LoginContent(
+            name = name,
+            onNameChanged = { name = it },
+            loginClick
+        )
     }
-
 }
 
 @Composable

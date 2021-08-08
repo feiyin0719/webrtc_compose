@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.iffly.compose.redux.StoreViewModel
 import com.iffly.compose.redux.storeViewModel
 import com.iffly.webrtc_compose.App
 import com.iffly.webrtc_compose.CallActivity
@@ -48,39 +49,39 @@ fun UserScreen() {
     LaunchedEffect(init) {
         if (init) {
             init = false
-            store.dispatch(
-                UserViewAction(
-                    UserViewAction.UserViewActionValue.ChangeLadoing,
-                    ""
-                )
-            )
-            store.dispatch(
-                UserViewAction(
-                    UserViewAction.UserViewActionValue.Refresh,
-                    ""
-                )
-            )
+            refresh(store)
+        }
+    }
+    val refreshListener = remember {
+        {
+            refresh(store)
         }
     }
     val context = LocalContext.current
-    UserList(userViewState.list, userViewState.loading, {
-        store.dispatch(
-            UserViewAction(
-                UserViewAction.UserViewActionValue.ChangeLadoing,
-                ""
-            )
-        )
-        store.dispatch(
-            UserViewAction(
-                UserViewAction.UserViewActionValue.Refresh,
-                ""
-            )
-        )
-    }) {
-        CallActivity.startCallActivity(it, true, context = context)
+    val callClick = remember {
+        { it: String ->
+            CallActivity.startCallActivity(it, true, context = context)
+        }
     }
 
+    UserList(userViewState.list, userViewState.loading, refreshListener, callClick)
 
+
+}
+
+private fun refresh(store: StoreViewModel) {
+    store.dispatch(
+        UserViewAction(
+            UserViewAction.UserViewActionValue.ChangeLadoing,
+            ""
+        )
+    )
+    store.dispatch(
+        UserViewAction(
+            UserViewAction.UserViewActionValue.Refresh,
+            ""
+        )
+    )
 }
 
 @Composable

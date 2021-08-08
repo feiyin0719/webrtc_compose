@@ -18,14 +18,16 @@ fun AppImage(
     imageUrl: String,
     contentDescription: String?,
     modifier: Modifier = Modifier,
+    backgroundColor: Color = Color.LightGray,
     elevation: Dp = 0.dp
 ) {
     AppSurface(
-        color = Color.LightGray,
+        color = backgroundColor,
         elevation = elevation,
         shape = CircleShape,
-        modifier = modifier
-    ) {
+        modifier = modifier,
+
+        ) {
         Image(
             painter = rememberImagePainter(
                 data = imageUrl,
@@ -46,10 +48,11 @@ fun AppImage(
     @DrawableRes imageId: Int,
     contentDescription: String?,
     modifier: Modifier = Modifier,
-    elevation: Dp = 0.dp
+    elevation: Dp = 0.dp,
+    backgroundColor: Color = Color.LightGray
 ) {
     AppSurface(
-        color = Color.LightGray,
+        color = backgroundColor,
         elevation = elevation,
         shape = CircleShape,
         modifier = modifier

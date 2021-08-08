@@ -14,15 +14,15 @@ import java.util.*
 
 
 data class CallViewSate(
+    val userid: String,
     val closeState: Boolean,
     val localSurfaceView: SurfaceView?,
     val remoteSurfaceView: SurfaceView?,
     val callState: CallState,
     val outGoingState: Boolean,
-    val initCallComplete: Boolean
-) {
-
-}
+    val initCallComplete: Boolean,
+    val audioOnly: Boolean = false
+)
 
 data class CallViewAction(
     val action: CallViewActionValue,
@@ -39,7 +39,8 @@ data class CallViewAction(
         Error,
         Disconnect,
         Accept,
-        Hang
+        Hang,
+        ChangeAudio
     }
 
     companion object {
@@ -65,7 +66,10 @@ class CallReducer :
                     val surfaceView: View? =
                         SkyEngineKit.Instance().currentSession?.setupRemoteVideo(userId, false)
                     if (surfaceView != null) {
-                        return@withContext state.copy(remoteSurfaceView = surfaceView as SurfaceView)
+                        return@withContext state.copy(
+                            remoteSurfaceView = surfaceView as SurfaceView,
+                            userid = userId
+                        )
                     } else {
                         return@withContext state.copy(closeState = true)
                     }
@@ -118,7 +122,17 @@ class CallReducer :
             CallViewAction.CallViewActionValue.Disconnect -> {
                 return state.copy(closeState = true)
             }
-
+            CallViewAction.CallViewActionValue.ChangeAudio -> {
+                SkyEngineKit.Instance().currentSession?.switchToAudio()
+                return state.copy()
+            }
+            CallViewAction.CallViewActionValue.ChangeMode -> {
+                return state.copy(
+                    audioOnly = true,
+                    localSurfaceView = null,
+                    remoteSurfaceView = null
+                )
+            }
             else -> state.copy()
         }
         return state.copy()
@@ -144,7 +158,8 @@ class CallReducer :
                 return state.copy(
                     callState = CallState.Incoming,
                     initCallComplete = true,
-                    localSurfaceView = surfaceView
+                    localSurfaceView = surfaceView,
+                    userid = App.instance?.otherUserId ?: ""
                 )
             }
         } else {
@@ -166,7 +181,8 @@ class CallReducer :
                     } else {
                         return@withContext state.copy(
                             callState = CallState.Outgoing,
-                            initCallComplete = true
+                            initCallComplete = true,
+                            userid = userId
                         )
                     }
                 }
@@ -176,6 +192,7 @@ class CallReducer :
 
     override fun initState(): CallViewSate {
         return CallViewSate(
+            "",
             false,
             null,
             null,
