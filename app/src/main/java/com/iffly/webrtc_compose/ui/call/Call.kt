@@ -324,19 +324,30 @@ fun CallContent(
     ) {
 
         Row(
-            horizontalArrangement = Arrangement.SpaceAround, modifier = Modifier
+
+            horizontalArrangement = Arrangement.SpaceAround,
+            modifier = Modifier
                 .wrapContentHeight()
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.Bottom
 
         ) {
             if (callState == CallState.Connected && !isAudioOnly) {
-                AppImage(imageId = R.mipmap.av_camera, contentDescription = "camera",
-                    Modifier
-                        .size(75.dp, 75.dp)
-                        .clickable {
-                            switchCameraClick.invoke()
-                        }
-                )
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = "切换摄像头",
+                        color = Color.LightGray,
+                        style = Typography.subtitle1,
+                        modifier = Modifier.offset(0.dp, -5.dp)
+                    )
+                    AppImage(imageId = R.mipmap.av_camera, contentDescription = "camera",
+                        Modifier
+                            .size(75.dp, 75.dp)
+                            .clickable {
+                                switchCameraClick.invoke()
+                            }
+                    )
+                }
             }
 
             AppImage(imageId = R.mipmap.av_hang_answer, contentDescription = "hang_answer",
@@ -347,37 +358,49 @@ fun CallContent(
                     }
             )
             if (callState == CallState.Incoming && !outGoing)
-                AppImage(imageId = R.mipmap.av_video_answer,
+                AppImage(
+                    imageId = if (!isAudioOnly) R.mipmap.av_video_answer else R.mipmap.av_audio_trans,
                     contentDescription = "video_answer",
                     Modifier
                         .size(75.dp, 75.dp)
                         .clickable {
                             videoAnswerClick.invoke()
-                        }
+                        },
+                    backgroundColor = Color.Green
                 )
-            if ((callState == CallState.Connected || callState == CallState.Incoming) && !isAudioOnly) {
-                if (callState != CallState.Connected)
-                    AppImage(
-                        imageId = R.mipmap.av_audio_trans,
-                        contentDescription = "audio_answer",
-                        Modifier
-                            .size(75.dp, 75.dp)
-                            .clickable {
-                                audioAnswerClick.invoke()
-                            },
-                        backgroundColor = Color.Green
+            if ((callState == CallState.Connected || callState == CallState.Incoming || callState == CallState.Outgoing) && !isAudioOnly) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = "切换到语音",
+                        color = Color.LightGray,
+                        style = Typography.subtitle1,
+                        modifier = Modifier.offset(0.dp, -5.dp)
                     )
-                else {
-                    AppImage(
-                        imageId = R.mipmap.av_phone,
-                        contentDescription = "audio_answer",
-                        Modifier
-                            .size(75.dp, 75.dp)
-                            .clickable {
-                                audioAnswerClick.invoke()
-                            },
-                    )
+                    if (callState != CallState.Connected)
+                        AppImage(
+                            imageId = R.mipmap.av_audio_trans,
+                            contentDescription = "audio_answer",
+                            Modifier
+                                .size(75.dp, 75.dp)
+                                .clickable {
+                                    audioAnswerClick.invoke()
+                                },
+                            backgroundColor = Color.Green
+                        )
+                    else {
+                        AppImage(
+                            imageId = R.mipmap.av_phone,
+                            contentDescription = "audio_answer",
+                            Modifier
+                                .size(75.dp, 75.dp)
+                                .clickable {
+                                    audioAnswerClick.invoke()
+                                },
+                        )
+                    }
                 }
+
+
             }
         }
 
