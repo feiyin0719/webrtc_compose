@@ -38,10 +38,7 @@ fun UserScreen() {
 
     val userViewState: UserViewState
             by store.getState(UserViewState::class.java).observeAsState(
-                UserViewState(
-                    true,
-                    emptyList()
-                )
+                UserViewState()
             )
     var init by remember {
         mutableStateOf(true)

@@ -5,7 +5,7 @@ import com.iffly.webrtc_compose.App
 import com.iffly.webrtc_compose.data.repo.net.ServiceCreator
 import com.iffly.webrtc_compose.socket.SocketManager
 
-data class LoginState(val state: LoginStateEnum, val userName: String)
+data class LoginState(val state: LoginStateEnum = LoginStateEnum.Logout, val userName: String = "")
 
 data class LoginAction(val action: LoginActionValue, val data: String) {
     enum class LoginActionValue {
@@ -29,10 +29,6 @@ class LoginReducer :
             else
                 return LoginState(LoginStateEnum.Logout, "")
         }
-    }
-
-    override fun initState(): LoginState {
-        return LoginState(LoginStateEnum.Logout, "")
     }
 
 }

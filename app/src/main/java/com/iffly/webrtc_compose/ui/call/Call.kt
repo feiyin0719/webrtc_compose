@@ -49,17 +49,11 @@ fun CallScreen(outGoing: Boolean = false, userId: String = "") {
             )
         }
     }
-    val callViewSate by store.getState(CallViewSate::class.java).observeAsState(
-        CallViewSate(
-            "",
-            false,
-            null,
-            null,
-            CallState.Incoming,
-            false,
-            false
+    val callViewSate by
+    store.getState(CallViewSate::class.java)
+        .observeAsState(
+            CallViewSate()
         )
-    )
     val close = callViewSate.closeState
     val outGoing = callViewSate.outGoingState
     if (close) {

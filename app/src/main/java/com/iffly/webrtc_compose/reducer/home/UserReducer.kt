@@ -8,7 +8,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 
-data class UserViewState(val loading: Boolean, val list: List<UserItem>)
+data class UserViewState(val loading: Boolean = true, val list: List<UserItem> = emptyList())
 
 data class UserViewAction(val action: UserViewActionValue, val data: String) {
     enum class UserViewActionValue {
@@ -42,8 +42,5 @@ class UserReducer :
         }
     }
 
-    override fun initState(): UserViewState {
-        return UserViewState(false, emptyList())
-    }
 
 }
