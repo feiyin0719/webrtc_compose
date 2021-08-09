@@ -10,20 +10,25 @@ import com.iffly.webrtc_compose.App
 import com.iffly.webrtc_compose.voip.VoipEvent
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.withContext
-import org.webrtc.SurfaceViewRenderer
 import java.util.*
 
 
 data class CallViewSate(
-    val userid: String,
-    val closeState: Boolean,
-    val localSurfaceView: SurfaceView?,
-    val remoteSurfaceView: SurfaceView?,
-    val callState: CallState,
-    val outGoingState: Boolean,
-    val initCallComplete: Boolean,
+    val userid: String = "",
+    val closeState: Boolean = false,
+    val localSurfaceView: SurfaceView? = null,
+    val remoteSurfaceView: SurfaceView? = null,
+    val callState: CallState = CallState.Incoming,
+    val outGoingState: Boolean = false,
+    val initCallComplete: Boolean = false,
     val audioOnly: Boolean = false
-)
+) {
+
+    fun copyCloseState(): CallViewSate {
+        return this.copy(closeState = true, localSurfaceView = null, remoteSurfaceView = null)
+    }
+
+}
 
 data class CallViewAction(
     val action: CallViewActionValue,
@@ -73,7 +78,7 @@ class CallReducer :
                             userid = userId
                         )
                     } else {
-                        return@withContext state.copy(closeState = true)
+                        return@withContext state.copyCloseState()
                     }
                 }
             }
@@ -106,7 +111,7 @@ class CallReducer :
                         SkyEngineKit.Instance().endCall()
 
                     }
-                    return@withContext state.copy(closeState = true)
+                    return@withContext state.copyCloseState()
                 }
             }
             CallViewAction.CallViewActionValue.ChangeState -> {
@@ -119,10 +124,10 @@ class CallReducer :
             CallViewAction.CallViewActionValue.EndCall -> {
                 App.instance?.otherUserId = ""
                 App.instance?.roomId = ""
-                return state.copy(closeState = true)
+                return state.copyCloseState()
             }
             CallViewAction.CallViewActionValue.Disconnect -> {
-                return state.copy(closeState = true)
+                return state.copyCloseState()
             }
             CallViewAction.CallViewActionValue.ChangeAudio -> {
                 SkyEngineKit.Instance().currentSession?.switchToAudio()
@@ -149,7 +154,7 @@ class CallReducer :
         val outGoing: Boolean = map[CallViewAction.OUTGOING_KEY] as Boolean
         if (!outGoing) {
             if (session == null) {
-                return state.copy(closeState = true)
+                return state.copyCloseState()
             } else {
                 val surfaceView = withContext(currentCoroutineContext()) {
                     val surfaceView: View? =
@@ -176,14 +181,14 @@ class CallReducer :
                 val b: Boolean =
                     SkyEngineKit.Instance().startOutCall(App.instance!!, room, userId, false)
                 if (!b) {
-                    return@withContext state.copy(closeState = true)
+                    return@withContext state.copyCloseState()
                 } else {
 
                     App.instance?.roomId = room
                     App.instance?.otherUserId = userId
                     val session: CallSession? = SkyEngineKit.Instance().currentSession
                     if (session == null) {
-                        return@withContext state.copy(closeState = true)
+                        return@withContext state.copyCloseState()
                     } else {
                         return@withContext state.copy(
                             callState = CallState.Outgoing,
@@ -194,18 +199,6 @@ class CallReducer :
                 }
             }
         }
-    }
-
-    override fun initState(): CallViewSate {
-        return CallViewSate(
-            "",
-            false,
-            null,
-            null,
-            CallState.Incoming,
-            false,
-            false
-        )
     }
 
 }
