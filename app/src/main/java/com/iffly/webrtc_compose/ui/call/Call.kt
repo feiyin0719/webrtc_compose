@@ -1,33 +1,16 @@
 package com.iffly.webrtc_compose.ui.call
 
 import android.app.Activity
-import android.view.SurfaceView
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.navigationBarsPadding
-import com.google.accompanist.insets.statusBarsPadding
 import com.iffly.compose.redux.storeViewModel
 import com.iffly.rtcchat.CallEndReason
 import com.iffly.rtcchat.CallSessionCallback
 import com.iffly.rtcchat.CallState
 import com.iffly.rtcchat.SkyEngineKit
-import com.iffly.webrtc_compose.R
 import com.iffly.webrtc_compose.reducer.call.CallViewAction
 import com.iffly.webrtc_compose.reducer.call.CallViewSate
-import com.iffly.webrtc_compose.ui.components.AndroidSurfaceView
-import com.iffly.webrtc_compose.ui.components.AppImage
-import com.iffly.webrtc_compose.ui.theme.Typography
-import com.iffly.webrtc_compose.ui.theme.WebrtcTheme
 
 @Composable
 fun CallScreen(outGoing: Boolean = false, userId: String = "") {
@@ -164,50 +147,7 @@ fun CallScreen(outGoing: Boolean = false, userId: String = "") {
             }
         }
 
-        val answerClick = remember {
-            {
-                store.dispatch(
-                    CallViewAction(
-                        CallViewAction.CallViewActionValue.Accept,
-                        mapOf()
-                    )
-                )
-            }
-        }
-        val hangAnswerClick = remember {
-            {
-                store.dispatch(
-                    CallViewAction(
-                        CallViewAction.CallViewActionValue.Hang,
-                        mapOf()
-                    )
-                )
-            }
-        }
 
-        val audioAnswerClick = remember {
-            {
-                store.dispatch(
-                    CallViewAction(
-                        CallViewAction.CallViewActionValue.ChangeAudio,
-                        mapOf()
-                    )
-                )
-
-            }
-        }
-
-        val switchCameraClick = remember {
-            {
-                store.dispatch(
-                    CallViewAction(
-                        CallViewAction.CallViewActionValue.SwitchCamera,
-                        mapOf()
-                    )
-                )
-
-            }
-        }
 
         CallContent(
             callViewSate.userid,
@@ -215,12 +155,39 @@ fun CallScreen(outGoing: Boolean = false, userId: String = "") {
             localSurfaceView = localSurfaceView,
             outGoing,
             callState = callState,
-            answerClick,
-            hangAnswerClick,
-            audioAnswerClick,
+            {
+                store.dispatch(
+                    CallViewAction(
+                        CallViewAction.CallViewActionValue.Accept,
+                        mapOf()
+                    )
+                )
+            },
+            {
+                store.dispatch(
+                    CallViewAction(
+                        CallViewAction.CallViewActionValue.Hang,
+                        mapOf()
+                    )
+                )
+            },
+            {
+                store.dispatch(
+                    CallViewAction(
+                        CallViewAction.CallViewActionValue.ChangeAudio,
+                        mapOf()
+                    )
+                )
+            },
             isAudioOnly = callViewSate.audioOnly,
-            switchCameraClick
-        )
+        ) {
+            store.dispatch(
+                CallViewAction(
+                    CallViewAction.CallViewActionValue.SwitchCamera,
+                    mapOf()
+                )
+            )
+        }
     }
 }
 
