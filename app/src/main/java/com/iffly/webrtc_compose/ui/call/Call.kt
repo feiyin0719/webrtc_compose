@@ -20,6 +20,7 @@ import com.iffly.rtcchat.CallSessionCallback
 import com.iffly.rtcchat.CallState
 import com.iffly.rtcchat.SkyEngineKit
 import com.iffly.webrtc_compose.reducer.call.CallViewAction
+import com.iffly.webrtc_compose.reducer.call.CallViewAction.Companion.PERMISSION_KEY
 import com.iffly.webrtc_compose.reducer.call.CallViewSate
 import com.iffly.webrtc_compose.ui.theme.Typography
 
@@ -40,17 +41,14 @@ fun CallScreen(outGoing: Boolean = false, userId: String = "") {
                     return@forEach
                 }
             }
-            if (isAllGranted)
-                store.dispatch(
-                    CallViewAction(
-                        CallViewAction.CallViewActionValue.ChangePermission,
-                        mapOf()
-                    )
+
+            store.dispatch(
+                CallViewAction(
+                    CallViewAction.CallViewActionValue.ChangePermission,
+                    mapOf(PERMISSION_KEY to isAllGranted)
                 )
-            else {
-                if (activity is Activity)
-                    activity.finish()
-            }
+            )
+
         }
     LaunchedEffect(key1 = init) {
         if (init) {

@@ -7,6 +7,7 @@ import com.iffly.rtcchat.CallSession
 import com.iffly.rtcchat.CallState
 import com.iffly.rtcchat.SkyEngineKit
 import com.iffly.webrtc_compose.App
+import com.iffly.webrtc_compose.reducer.call.CallViewAction.Companion.PERMISSION_KEY
 import com.iffly.webrtc_compose.voip.VoipEvent
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.withContext
@@ -59,6 +60,7 @@ data class CallViewAction(
         const val STATE_KEY = "state"
         const val REASON_KEY = "reason"
         const val ERROR_KEY = "error"
+        const val PERMISSION_KEY = "havePermission"
     }
 }
 
@@ -108,11 +110,7 @@ class CallReducer :
             }
             CallViewAction.CallViewActionValue.Hang -> {
                 return withContext(currentCoroutineContext()) {
-                    val session = SkyEngineKit.Instance().currentSession
-                    if (session != null) {
-                        SkyEngineKit.Instance().endCall()
-
-                    }
+                    SkyEngineKit.Instance().endCall()
                     return@withContext state.copyCloseState()
                 }
             }
@@ -146,8 +144,18 @@ class CallReducer :
                 SkyEngineKit.Instance().currentSession?.switchCamera()
                 return state.copy()
             }
-            CallViewAction.CallViewActionValue.ChangePermission ->
-                return state.copy(havePermission = true)
+            CallViewAction.CallViewActionValue.ChangePermission -> {
+                val havePermission = action.map[PERMISSION_KEY] as Boolean
+                if (havePermission)
+                    return state.copy(havePermission = true)
+                else {
+                    SkyEngineKit.Instance().sendRefuseOnPermissionDenied(
+                        App.instance!!.roomId,
+                        App.instance!!.otherUserId
+                    )
+                    return state.copy(havePermission = false, closeState = true)
+                }
+            }
             else -> state.copy()
         }
         return state.copy()
@@ -160,22 +168,30 @@ class CallReducer :
             if (session == null) {
                 return state.copyCloseState()
             } else {
-                val surfaceView = withContext(currentCoroutineContext()) {
-                    val surfaceView: View? =
-                        SkyEngineKit.Instance().currentSession?.setupLocalVideo(false)
-
-                    if (surfaceView != null && surfaceView is SurfaceView) {
-                        surfaceView.setZOrderMediaOverlay(true)
-
-                    }
-                    return@withContext surfaceView as SurfaceView?
-                }
-                return state.copy(
-                    callState = CallState.Incoming,
-                    initCallComplete = true,
-                    localSurfaceView = surfaceView,
-                    userid = App.instance?.otherUserId ?: ""
+                val b = SkyEngineKit.Instance().startInCall(
+                    App.instance!!,
+                    App.instance!!.roomId, App.instance!!.otherUserId, state.audioOnly
                 )
+
+                if (b) {
+                    val surfaceView = withContext(currentCoroutineContext()) {
+                        val surfaceView: View? =
+                            SkyEngineKit.Instance().currentSession?.setupLocalVideo(false)
+
+                        if (surfaceView != null && surfaceView is SurfaceView) {
+                            surfaceView.setZOrderMediaOverlay(true)
+
+                        }
+                        return@withContext surfaceView as SurfaceView?
+                    }
+                    return state.copy(
+                        callState = CallState.Incoming,
+                        initCallComplete = true,
+                        localSurfaceView = surfaceView,
+                        userid = App.instance?.otherUserId ?: ""
+                    )
+                } else
+                    return state.copyCloseState()
             }
         } else {
             val userId = map[CallViewAction.USER_KEY] as String

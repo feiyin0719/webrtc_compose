@@ -27,23 +27,18 @@ class VoipReceiver : BroadcastReceiver() {
                 inviteUserName = "p2pChat"
             }
 
-            val b = SkyEngineKit.Instance().startInCall(
-                App.instance!!,
-                room!!, inviteId!!, audioOnly
-            )
 
-            if (b) {
-                Log.i("myyf", "accept call")
-                App.instance?.otherUserId = inviteId
-                App.instance?.roomId = room
+            Log.i("myyf", "accept call")
+            App.instance?.otherUserId = inviteId!!
+            App.instance?.roomId = room!!
 
-                if (list.size == 1) {
-                    CallActivity.startCallActivity(context = context)
+            if (list.size == 1) {
+                CallActivity.startCallActivity(context = context)
 
-                } else {
-                    // 群聊
-                }
+            } else {
+                // 群聊
             }
+
 //            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 //                if (com.iffly.webrtc_compose.util.Utils.isAppRunningForeground()) {
 //                    onForegroundOrBeforeVersionO(
