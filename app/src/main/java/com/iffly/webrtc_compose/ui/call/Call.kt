@@ -77,7 +77,7 @@ fun CallScreen(outGoing: Boolean = false, userId: String = "") {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
                     text = "You need request permission",
-                    style = Typography.h2
+                    style = Typography.body1
                 )
             }
         }
