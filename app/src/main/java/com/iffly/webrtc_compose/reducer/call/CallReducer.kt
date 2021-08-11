@@ -21,7 +21,8 @@ data class CallViewSate(
     val callState: CallState = CallState.Incoming,
     val outGoingState: Boolean = false,
     val initCallComplete: Boolean = false,
-    val audioOnly: Boolean = false
+    val audioOnly: Boolean = false,
+    val havePermission: Boolean = false
 ) {
 
     fun copyCloseState(): CallViewSate {
@@ -47,7 +48,8 @@ data class CallViewAction(
         Accept,
         Hang,
         ChangeAudio,
-        SwitchCamera
+        SwitchCamera,
+        ChangePermission
     }
 
     companion object {
@@ -144,6 +146,8 @@ class CallReducer :
                 SkyEngineKit.Instance().currentSession?.switchCamera()
                 return state.copy()
             }
+            CallViewAction.CallViewActionValue.ChangePermission ->
+                return state.copy(havePermission = true)
             else -> state.copy()
         }
         return state.copy()
