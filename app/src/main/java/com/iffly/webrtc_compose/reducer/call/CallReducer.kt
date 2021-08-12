@@ -161,18 +161,19 @@ class CallReducer :
     }
 
     private fun initCall(state: CallViewSate, map: Map<String, Any>): CallViewSate {
-        val session = SkyEngineKit.Instance().currentSession
+
         val outGoing: Boolean = map[CallViewAction.OUTGOING_KEY] as Boolean
         if (!outGoing) {
-            if (session == null) {
+            val b = SkyEngineKit.Instance().startInCall(
+                App.instance!!,
+                App.instance!!.roomId, App.instance!!.otherUserId, state.audioOnly
+            )
+
+            if (!b) {
                 return state.copyCloseState()
             } else {
-                val b = SkyEngineKit.Instance().startInCall(
-                    App.instance!!,
-                    App.instance!!.roomId, App.instance!!.otherUserId, state.audioOnly
-                )
-
-                if (b) {
+                val session = SkyEngineKit.Instance().currentSession
+                if (session != null) {
                     val surfaceView: View? =
                         SkyEngineKit.Instance().currentSession?.setupLocalVideo(false)
 
