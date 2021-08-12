@@ -44,6 +44,7 @@ dependencies {
     implementation Libs.AndroidX.Compose.liveData
     implementation Libs.AndroidX.Compose.runtime
     implementation Libs.AndroidX.Compose.foundation
+    implementation Libs.AndroidX.LiveData.liveDataKtx
     androidTestImplementation Libs.JUnit.junit
     androidTestImplementation Libs.AndroidX.Test.runner
     androidTestImplementation Libs.AndroidX.Test.espressoCore

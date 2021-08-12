@@ -157,7 +157,6 @@ private fun handlePermissionResult(store: StoreViewModel, map: MutableMap<String
 }
 
 
-
 private class StoreCallSessionCallback(val store: StoreViewModel) : CallSessionCallback {
     override fun didCallEndWithReason(var1: CallEndReason?) {
         store.dispatch(

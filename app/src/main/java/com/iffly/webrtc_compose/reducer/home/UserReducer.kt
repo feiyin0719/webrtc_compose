@@ -5,42 +5,39 @@ import com.iffly.webrtc_compose.data.bean.UserItem
 import com.iffly.webrtc_compose.data.repo.net.UserRepo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.*
 
 
 data class UserViewState(val loading: Boolean = true, val list: List<UserItem> = emptyList())
 
 data class UserViewAction(val action: UserViewActionValue, val data: String) {
     enum class UserViewActionValue {
-        Refresh, Call, ChangeLadoing
+        Refresh, Call
     }
 }
 
 class UserReducer :
     Reducer<UserViewState, UserViewAction>(UserViewState::class.java, UserViewAction::class.java) {
-    override suspend fun reduce(state: UserViewState, action: UserViewAction): UserViewState {
-        when (action.action) {
-            UserViewAction.UserViewActionValue.Call -> {
-                return state.copy()
-            }
-            UserViewAction.UserViewActionValue.Refresh -> {
-                try {
-                    val list = withContext(Dispatchers.IO) {
-                        delay(1000)
-                        UserRepo.getUsers()
-                    }
-                    return state.copy(loading = false, list = list)
-                } catch (e: Exception) {
-                    return state.copy(loading = false)
+    override fun reduce(state: UserViewState, flow: Flow<UserViewAction>): Flow<UserViewState> {
+        return flow.map { action ->
+            return@map when (action.action) {
+                UserViewAction.UserViewActionValue.Call -> {
+                    state.copy()
                 }
+                UserViewAction.UserViewActionValue.Refresh -> {
 
-            }
-            UserViewAction.UserViewActionValue.ChangeLadoing -> {
-                return state.copy(loading = true)
+                    try {
+                        val list = UserRepo.getUsers()
+                        delay(1000)
+                        state.copy(loading = false, list = list)
+                    } catch (e: Exception) {
+                        state.copy(loading = false)
+                    }
+                }
             }
 
+        }.flowOn(Dispatchers.IO).onStart {
+            emit(state.copy(loading = true))
         }
     }
-
-
 }

@@ -63,6 +63,10 @@ object Libs {
             const val viewModelCompose =
                 "androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07"
         }
+        object LiveData {
+            const val version = "2.3.1"
+            const val liveDataKtx = "androidx.lifecycle:lifecycle-livedata-ktx:$version"
+        }
 
         object Navigation {
             const val navigationCompose = "androidx.navigation:navigation-compose:2.4.0-alpha05"
