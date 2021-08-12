@@ -37,12 +37,6 @@ fun UserScreen() {
 private fun refresh(store: StoreViewModel) {
     store.dispatch(
         UserViewAction(
-            UserViewAction.UserViewActionValue.ChangeLadoing,
-            ""
-        )
-    )
-    store.dispatch(
-        UserViewAction(
             UserViewAction.UserViewActionValue.Refresh,
             ""
         )
