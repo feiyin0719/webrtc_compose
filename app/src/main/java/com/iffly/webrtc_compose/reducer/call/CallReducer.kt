@@ -26,7 +26,8 @@ data class CallViewSate(
     val initCallComplete: Boolean = false,
     val audioOnly: Boolean = false,
     val havePermission: Boolean = false,
-    val isMute: Boolean = false
+    val isMute: Boolean = false,
+    val isSpeaker: Boolean = false
 ) {
 
     fun copyCloseState(): CallViewSate {
@@ -54,7 +55,8 @@ data class CallViewAction(
         ChangeAudio,
         SwitchCamera,
         ChangePermission,
-        ToggleMute
+        ToggleMute,
+        ToggleSpeaker
     }
 
     companion object {
@@ -161,6 +163,13 @@ class CallReducer :
                         isMute = !isMute
                     }
                     state.copy(isMute = isMute)
+                }
+                CallViewAction.CallViewActionValue.ToggleSpeaker -> {
+                    var isSpeaker = state.isSpeaker
+                    if (SkyEngineKit.Instance().currentSession?.toggleSpeaker(!isSpeaker) == true) {
+                        isSpeaker = !isSpeaker
+                    }
+                    state.copy(isSpeaker = isSpeaker)
                 }
                 else -> state.copy()
             }

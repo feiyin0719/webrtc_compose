@@ -145,7 +145,17 @@ fun CallScreenWithPermission(callViewSate: CallViewSate, store: StoreViewModel) 
                     mapOf()
                 )
             )
-        })
+        },
+        isSpeaker = callViewSate.isSpeaker,
+        {
+            store.dispatch(
+                CallViewAction(
+                    CallViewAction.CallViewActionValue.ToggleSpeaker,
+                    mapOf()
+                )
+            )
+        }
+    )
 }
 
 private fun handlePermissionResult(store: StoreViewModel, map: MutableMap<String, Boolean>) {

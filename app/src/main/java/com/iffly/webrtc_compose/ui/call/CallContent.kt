@@ -33,7 +33,9 @@ fun CallContent(
     isAudioOnly: Boolean = false,
     switchCameraClick: () -> Unit = {},
     isMute: Boolean = false,
-    muteChangeClick: () -> Unit = {}
+    muteChangeClick: () -> Unit = {},
+    isSpeaker: Boolean = false,
+    speakerChangeClick: () -> Unit = {}
 ) {
 
     videoContent(
@@ -61,7 +63,9 @@ fun CallContent(
             isAudioOnly = isAudioOnly,
             switchCameraClick = switchCameraClick,
             isMute = isMute,
-            muteChangeClick = muteChangeClick
+            muteChangeClick = muteChangeClick,
+            isSpeaker = isSpeaker,
+            speakerChangeClick = speakerChangeClick
         )
     }
 }
@@ -153,7 +157,9 @@ private fun controlButtons(
     isAudioOnly: Boolean = false,
     switchCameraClick: () -> Unit = {},
     isMute: Boolean = false,
-    muteChangeClick: () -> Unit = {}
+    muteChangeClick: () -> Unit = {},
+    isSpeaker: Boolean = false,
+    speakerChangeClick: () -> Unit = {}
 ) {
     Row(
 
@@ -164,8 +170,9 @@ private fun controlButtons(
         verticalAlignment = Alignment.Bottom
 
     ) {
-        if (callState == CallState.Connected) {
-            if (!isAudioOnly)
+
+        if (!isAudioOnly) {
+            if (callState == CallState.Connected)
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
                         text = "切换摄像头",
@@ -181,10 +188,11 @@ private fun controlButtons(
                             }
                     )
                 }
-            else {
+        } else {
+            if (callState != CallState.Incoming)
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        text = if (isMute) "扬声器" else "静音",
+                        text = "静音",
                         color = Color.LightGray,
                         style = Typography.subtitle1,
                         modifier = Modifier.offset(0.dp, -5.dp)
@@ -200,10 +208,7 @@ private fun controlButtons(
                             }
                     )
                 }
-            }
         }
-
-
 
         AppImage(imageId = R.mipmap.av_hang_answer, contentDescription = "hang_answer",
             Modifier
@@ -253,6 +258,26 @@ private fun controlButtons(
                             },
                     )
                 }
+            }
+        }
+        if (isAudioOnly && callState != CallState.Incoming) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = "扬声器",
+                    color = Color.LightGray,
+                    style = Typography.subtitle1,
+                    modifier = Modifier.offset(0.dp, -5.dp)
+                )
+                AppImage(
+                    imageId = R.mipmap.av_handfree,
+                    contentDescription = "speaker",
+                    backgroundColor = if (isSpeaker) Color.Green else Color.Gray,
+                    modifier = Modifier
+                        .size(75.dp, 75.dp)
+                        .clickable {
+                            speakerChangeClick.invoke()
+                        }
+                )
             }
         }
     }
