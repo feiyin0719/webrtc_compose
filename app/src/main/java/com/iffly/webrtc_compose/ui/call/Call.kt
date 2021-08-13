@@ -129,14 +129,33 @@ fun CallScreenWithPermission(callViewSate: CallViewSate, store: StoreViewModel) 
             )
         },
         isAudioOnly = callViewSate.audioOnly,
-    ) {
-        store.dispatch(
-            CallViewAction(
-                CallViewAction.CallViewActionValue.SwitchCamera,
-                mapOf()
+        {
+            store.dispatch(
+                CallViewAction(
+                    CallViewAction.CallViewActionValue.SwitchCamera,
+                    mapOf()
+                )
             )
-        )
-    }
+        },
+        isMute = callViewSate.isMute,
+        {
+            store.dispatch(
+                CallViewAction(
+                    CallViewAction.CallViewActionValue.ToggleMute,
+                    mapOf()
+                )
+            )
+        },
+        isSpeaker = callViewSate.isSpeaker,
+        {
+            store.dispatch(
+                CallViewAction(
+                    CallViewAction.CallViewActionValue.ToggleSpeaker,
+                    mapOf()
+                )
+            )
+        }
+    )
 }
 
 private fun handlePermissionResult(store: StoreViewModel, map: MutableMap<String, Boolean>) {
