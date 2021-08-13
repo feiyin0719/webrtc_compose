@@ -31,7 +31,46 @@ fun CallContent(
     hangAnswerClick: () -> Unit,
     audioAnswerClick: () -> Unit = {},
     isAudioOnly: Boolean = false,
-    switchCameraClick: () -> Unit = {}
+    switchCameraClick: () -> Unit = {},
+    isMute: Boolean = false,
+    muteChangeClick: () -> Unit = {}
+) {
+
+    videoContent(
+        remoteSurfaceView = remoteSurfaceView,
+        localSurfaceView = localSurfaceView,
+        callState = callState
+    )
+    if (isAudioOnly) {
+        userContent(userId = userId)
+    }
+
+    Column(
+        verticalArrangement = Arrangement.Bottom, modifier = Modifier
+            .fillMaxSize()
+            .navigationBarsPadding()
+            .offset(
+                0.dp, -20.dp
+            )
+    ) {
+        controlButtons(
+            callState = callState,
+            videoAnswerClick = videoAnswerClick,
+            hangAnswerClick = hangAnswerClick,
+            audioAnswerClick = audioAnswerClick,
+            isAudioOnly = isAudioOnly,
+            switchCameraClick = switchCameraClick,
+            isMute = isMute,
+            muteChangeClick = muteChangeClick
+        )
+    }
+}
+
+@Composable
+private fun videoContent(
+    remoteSurfaceView: SurfaceView?,
+    localSurfaceView: SurfaceView?,
+    callState: CallState
 ) {
     if (callState == CallState.Connected) {
         remoteSurfaceView?.let {
@@ -72,55 +111,61 @@ fun CallContent(
             }
         }
     }
+}
 
-    if (isAudioOnly) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .navigationBarsPadding()
-                .statusBarsPadding()
-                .fillMaxSize()
-                .background(WebrtcTheme.colors.uiBackground)
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.wrapContentSize()
-            ) {
-                AppImage(
-                    imageId = R.mipmap.av_default_header,
-                    contentDescription = "hang_answer",
-                    Modifier
-                        .size(150.dp, 150.dp)
-                )
-                Text(
-                    text = userId,
-                    style = Typography.h3,
-                    textAlign = TextAlign.Center
-                )
-            }
-
-        }
-    }
-
-    Column(
-        verticalArrangement = Arrangement.Bottom, modifier = Modifier
-            .fillMaxSize()
+@Composable
+private fun userContent(userId: String) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
             .navigationBarsPadding()
-            .offset(
-                0.dp, -20.dp
-            )
+            .statusBarsPadding()
+            .fillMaxSize()
+            .background(WebrtcTheme.colors.uiBackground)
     ) {
-
-        Row(
-
-            horizontalArrangement = Arrangement.SpaceAround,
-            modifier = Modifier
-                .wrapContentHeight()
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.Bottom
-
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.wrapContentSize()
         ) {
-            if (callState == CallState.Connected && !isAudioOnly) {
+            AppImage(
+                imageId = R.mipmap.av_default_header,
+                contentDescription = "hang_answer",
+                Modifier
+                    .size(150.dp, 150.dp)
+            )
+            Text(
+                text = userId,
+                style = Typography.h3,
+                textAlign = TextAlign.Center
+            )
+        }
+
+    }
+}
+
+@Composable
+private fun controlButtons(
+    outGoing: Boolean = false,
+    callState: CallState,
+    videoAnswerClick: () -> Unit,
+    hangAnswerClick: () -> Unit,
+    audioAnswerClick: () -> Unit = {},
+    isAudioOnly: Boolean = false,
+    switchCameraClick: () -> Unit = {},
+    isMute: Boolean = false,
+    muteChangeClick: () -> Unit = {}
+) {
+    Row(
+
+        horizontalArrangement = Arrangement.SpaceAround,
+        modifier = Modifier
+            .wrapContentHeight()
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.Bottom
+
+    ) {
+        if (callState == CallState.Connected) {
+            if (!isAudioOnly)
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
                         text = "切换摄像头",
@@ -136,62 +181,79 @@ fun CallContent(
                             }
                     )
                 }
-            }
-
-            AppImage(imageId = R.mipmap.av_hang_answer, contentDescription = "hang_answer",
-                Modifier
-                    .size(75.dp, 75.dp)
-                    .clickable {
-                        hangAnswerClick.invoke()
-                    }
-            )
-            if (callState == CallState.Incoming && !outGoing)
-                AppImage(
-                    imageId = if (!isAudioOnly) R.mipmap.av_video_answer else R.mipmap.av_audio_trans,
-                    contentDescription = "video_answer",
-                    Modifier
-                        .size(75.dp, 75.dp)
-                        .clickable {
-                            videoAnswerClick.invoke()
-                        },
-                    backgroundColor = Color.Green
-                )
-            if ((callState == CallState.Connected || callState == CallState.Incoming || callState == CallState.Outgoing) && !isAudioOnly) {
+            else {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        text = "切换到语音",
+                        text = if (isMute) "扬声器" else "静音",
                         color = Color.LightGray,
                         style = Typography.subtitle1,
                         modifier = Modifier.offset(0.dp, -5.dp)
                     )
-                    if (callState != CallState.Connected)
-                        AppImage(
-                            imageId = R.mipmap.av_audio_trans,
-                            contentDescription = "audio_answer",
-                            Modifier
-                                .size(75.dp, 75.dp)
-                                .clickable {
-                                    audioAnswerClick.invoke()
-                                },
-                            backgroundColor = Color.Green
-                        )
-                    else {
-                        AppImage(
-                            imageId = R.mipmap.av_phone,
-                            contentDescription = "audio_answer",
-                            Modifier
-                                .size(75.dp, 75.dp)
-                                .clickable {
-                                    audioAnswerClick.invoke()
-                                },
-                        )
-                    }
+                    AppImage(
+                        imageId = R.mipmap.av_mute,
+                        contentDescription = "mute",
+                        backgroundColor = if (isMute) Color.Green else Color.Gray,
+                        modifier = Modifier
+                            .size(75.dp, 75.dp)
+                            .clickable {
+                                muteChangeClick.invoke()
+                            }
+                    )
                 }
-
-
             }
         }
 
+
+
+        AppImage(imageId = R.mipmap.av_hang_answer, contentDescription = "hang_answer",
+            Modifier
+                .size(75.dp, 75.dp)
+                .clickable {
+                    hangAnswerClick.invoke()
+                }
+        )
+        if (callState == CallState.Incoming && !outGoing)
+            AppImage(
+                imageId = if (!isAudioOnly) R.mipmap.av_video_answer else R.mipmap.av_audio_trans,
+                contentDescription = "video_answer",
+                Modifier
+                    .size(75.dp, 75.dp)
+                    .clickable {
+                        videoAnswerClick.invoke()
+                    },
+                backgroundColor = Color.Green
+            )
+        if ((callState == CallState.Connected || callState == CallState.Incoming || callState == CallState.Outgoing) && !isAudioOnly) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = "切换到语音",
+                    color = Color.LightGray,
+                    style = Typography.subtitle1,
+                    modifier = Modifier.offset(0.dp, -5.dp)
+                )
+                if (callState != CallState.Connected)
+                    AppImage(
+                        imageId = R.mipmap.av_audio_trans,
+                        contentDescription = "audio_answer",
+                        Modifier
+                            .size(75.dp, 75.dp)
+                            .clickable {
+                                audioAnswerClick.invoke()
+                            },
+                        backgroundColor = Color.Green
+                    )
+                else {
+                    AppImage(
+                        imageId = R.mipmap.av_phone,
+                        contentDescription = "audio_answer",
+                        Modifier
+                            .size(75.dp, 75.dp)
+                            .clickable {
+                                audioAnswerClick.invoke()
+                            },
+                    )
+                }
+            }
+        }
     }
 }
-
