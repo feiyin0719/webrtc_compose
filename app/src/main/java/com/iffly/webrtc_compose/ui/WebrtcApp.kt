@@ -9,6 +9,7 @@ import com.google.accompanist.insets.ProvideWindowInsets
 import com.iffly.compose.redux.storeViewModel
 import com.iffly.webrtc_compose.reducer.app.LoginAction
 import com.iffly.webrtc_compose.reducer.app.LoginReducer
+import com.iffly.webrtc_compose.reducer.home.ChatRoomReducer
 import com.iffly.webrtc_compose.reducer.home.UserReducer
 import com.iffly.webrtc_compose.socket.IUserState
 import com.iffly.webrtc_compose.socket.SocketManager
@@ -20,7 +21,7 @@ import com.iffly.webrtc_compose.ui.theme.WebrtcTheme
 @Composable
 fun WebrtcApp() {
 
-    val store = storeViewModel(listOf(LoginReducer(), UserReducer()))
+    val store = storeViewModel(listOf(LoginReducer(), UserReducer(), ChatRoomReducer()))
     ProvideWindowInsets {
         WebrtcTheme {
             val tabs = remember { HomeSections.values.toTypedArray() }
