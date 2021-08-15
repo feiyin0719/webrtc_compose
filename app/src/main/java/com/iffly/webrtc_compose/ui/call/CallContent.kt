@@ -56,6 +56,7 @@ fun CallContent(
             )
     ) {
         controlButtons(
+            outGoing = outGoing,
             callState = callState,
             videoAnswerClick = videoAnswerClick,
             hangAnswerClick = hangAnswerClick,
