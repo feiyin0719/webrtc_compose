@@ -23,11 +23,14 @@ fun ChatRoomScreen() {
         }
     }
 
-    ChatList(list = viewState.list, isLoading = viewState.loading) {
+    ChatList(list = viewState.list, isLoading = viewState.loading,refreshListener = {
         refresh(store)
+    }) {
+
     }
 }
 
 private fun refresh(store: StoreViewModel) {
+    store.dispatch(ChatRoomAction(ChatRoomAction.ChatRoomActionValue.ChangeLoading, ""))
     store.dispatch(ChatRoomAction(ChatRoomAction.ChatRoomActionValue.Refresh, ""))
 }

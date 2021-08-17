@@ -12,7 +12,7 @@ data class UserViewState(val loading: Boolean = true, val list: List<UserItem> =
 
 data class UserViewAction(val action: UserViewActionValue, val data: String) {
     enum class UserViewActionValue {
-        Refresh, Call
+        Refresh, Call, ChangeLoading
     }
 }
 
@@ -23,6 +23,9 @@ class UserReducer :
             return@map when (action.action) {
                 UserViewAction.UserViewActionValue.Call -> {
                     state.copy()
+                }
+                UserViewAction.UserViewActionValue.ChangeLoading -> {
+                    state.copy(loading = true)
                 }
                 UserViewAction.UserViewActionValue.Refresh -> {
 
@@ -36,8 +39,6 @@ class UserReducer :
                 }
             }
 
-        }.flowOn(Dispatchers.IO).onStart {
-            emit(state.copy(loading = true))
-        }
+        }.flowOn(Dispatchers.IO)
     }
 }
