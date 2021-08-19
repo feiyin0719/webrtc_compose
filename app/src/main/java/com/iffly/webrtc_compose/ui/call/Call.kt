@@ -87,9 +87,10 @@ fun CallScreen(outGoing: Boolean = false, userId: String = "") {
 
 @Composable
 fun CallScreenWithPermission(callViewSate: CallViewSate, store: StoreViewModel) {
-    val callSessionCallback by remember {
-        mutableStateOf(StoreCallSessionCallback(store = store))
+    val callSessionCallback = remember {
+        StoreCallSessionCallback(store = store)
     }
+
     val surfaceView = callViewSate.remoteSurfaceView
     val callState = callViewSate.callState
     val localSurfaceView = callViewSate.localSurfaceView
@@ -180,9 +181,6 @@ private fun handlePermissionResult(store: StoreViewModel, map: MutableMap<String
 
 
 private class StoreCallSessionCallback(val store: StoreViewModel) : CallSessionCallback {
-    init {
-        Log.i("myyf", "new callback")
-    }
 
     override fun didCallEndWithReason(var1: CallEndReason?) {
         store.dispatch(

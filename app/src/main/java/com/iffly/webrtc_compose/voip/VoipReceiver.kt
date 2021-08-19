@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.media.AsyncPlayer
-import android.util.Log
 import com.iffly.rtcchat.SkyEngineKit
 import com.iffly.webrtc_compose.App
 import com.iffly.webrtc_compose.CallActivity
@@ -27,8 +26,6 @@ class VoipReceiver : BroadcastReceiver() {
                 inviteUserName = "p2pChat"
             }
 
-
-            Log.i("myyf", "accept call")
             App.instance?.otherUserId = inviteId!!
             App.instance?.roomId = room!!
 
