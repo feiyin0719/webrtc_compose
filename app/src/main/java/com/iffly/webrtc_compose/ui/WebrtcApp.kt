@@ -27,26 +27,27 @@ fun WebrtcApp() {
             val tabs = remember { HomeSections.values.toTypedArray() }
             val navController = rememberNavController()
             ProvideNavController(navController = navController) {
-                val userStateCallback by rememberUpdatedState(object : IUserState {
-                    override fun userLogin() {
-                        store.dispatch(
-                            LoginAction(
-                                LoginAction.LoginActionValue.ChangeState,
-                                "login"
+                val userStateCallback = remember {
+                    object : IUserState {
+                        override fun userLogin() {
+                            store.dispatch(
+                                LoginAction(
+                                    LoginAction.LoginActionValue.ChangeState,
+                                    "login"
+                                )
                             )
-                        )
-                    }
+                        }
 
-                    override fun userLogout() {
-                        store.dispatch(
-                            LoginAction(
-                                LoginAction.LoginActionValue.ChangeState,
-                                "logout"
+                        override fun userLogout() {
+                            store.dispatch(
+                                LoginAction(
+                                    LoginAction.LoginActionValue.ChangeState,
+                                    "logout"
+                                )
                             )
-                        )
+                        }
                     }
-
-                })
+                }
                 var init by remember {
                     mutableStateOf(true)
                 }

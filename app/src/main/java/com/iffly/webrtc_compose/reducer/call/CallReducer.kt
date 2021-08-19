@@ -223,10 +223,10 @@ class CallReducer :
                 App.instance?.roomId = room
                 App.instance?.otherUserId = userId
                 val session: CallSession? = SkyEngineKit.Instance().currentSession
-                if (session == null) {
-                    return state.copyCloseState()
+                return if (session == null) {
+                    state.copyCloseState()
                 } else {
-                    return state.copy(
+                    state.copy(
                         callState = CallState.Outgoing,
                         initCallComplete = true,
                         userid = userId
