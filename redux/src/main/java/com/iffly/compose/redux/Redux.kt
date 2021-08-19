@@ -4,22 +4,38 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.*
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class StoreViewModel(val list: List<Reducer<Any, Any>>) : ViewModel() {
-    private val _reducerMap = mutableMapOf<Class<*>, Channel<Any>>()
-    private val _stateMap = mutableMapOf<Any, LiveData<Any>>()
+class StoreViewModel(
+    private val list: List<Reducer<Any, Any>>,
+    middleWares: List<MiddleWare> = emptyList()
+) : StoreDispatch, StoreState, MiddleWareDispatch, ViewModel() {
+    private val _reducerMap = mutableMapOf<Class<Any>, Channel<Any>>()
+    val sharedMap = mutableMapOf<Any, SharedFlow<Any>>()
+    val stateMap = mutableMapOf<Any, LiveData<Any>>()
+    private lateinit var middleWareDispatchHead: MiddleWareDispatch
 
     init {
         viewModelScope.launch {
+            middleWareDispatchHead = this@StoreViewModel
+            val reserve = middleWares.map {
+                it(this@StoreViewModel)
+            }.toList().asReversed()
+            reserve.forEach {
+                middleWareDispatchHead = it(middleWareDispatchHead)
+            }
+
             list.forEach {
                 _reducerMap[it.actionClass] = Channel(Channel.UNLIMITED)
-                _stateMap[it.stateClass] =
+                sharedMap[it.stateClass] =
                     _reducerMap[it.actionClass]!!.receiveAsFlow().flatMapConcat { action ->
-                        if (_stateMap[it.stateClass]?.value != null)
-                            it.reduce(_stateMap[it.stateClass]!!.value!!, flow { emit(action) })
+                        if (stateMap[it.stateClass]?.value != null)
+                            it.reduce(
+                                stateMap[it.stateClass]!!.value!!,
+                                flow = flow { emit(action) })
                         else
                             flow {
                                 try {
@@ -28,7 +44,10 @@ class StoreViewModel(val list: List<Reducer<Any, Any>>) : ViewModel() {
                                     throw IllegalArgumentException("${it.stateClass} must provide zero argument constructor used to init state")
                                 }
                             }
-                    }.asLiveData()
+                    }.shareIn(viewModelScope, SharingStarted.Lazily, 1)
+
+                stateMap[it.stateClass] = sharedMap[it.stateClass]!!
+                    .asLiveData()
                 //send a message to init state
                 _reducerMap[it.actionClass]!!.send("")
 
@@ -37,33 +56,88 @@ class StoreViewModel(val list: List<Reducer<Any, Any>>) : ViewModel() {
 
     }
 
-    fun dispatch(action: Any) {
+    override fun dispatch(action: Any) {
         viewModelScope.launch {
-            _reducerMap[action::class.java]!!.send(action)
+            dispatchWithCoroutine(action = action)
         }
     }
 
-    suspend fun dispatchWithCoroutine(action: Any) {
-        _reducerMap[action::class.java]!!.send(action)
+    inline fun <reified T, reified R> depState(
+        noinline transform: (T) -> R,
+        scope: CoroutineScope = viewModelScope
+    ) {
+        sharedMap[R::class.java] = sharedMap[T::class.java]!!
+            .map {
+                transform(it as T)
+            }.shareIn(scope = scope, SharingStarted.Lazily, 1) as SharedFlow<Any>
+        stateMap[R::class.java] =
+            sharedMap[R::class.java]!!.asLiveData(context = scope.coroutineContext)
     }
 
-    fun <T> getState(stateClass: Class<T>): MutableLiveData<T> {
-        return _stateMap[stateClass]!! as MutableLiveData<T>
+
+    inline fun <reified T1, reified T2, reified R> depState(
+        noinline transform: (T1, T2) -> R,
+        scope: CoroutineScope = viewModelScope
+    ) {
+
+        sharedMap[R::class.java] = sharedMap[T1::class.java]!!.combine(sharedMap[T2::class.java]!!)
+        { t1, t2 ->
+            transform(t1 as T1, t2 as T2)
+        }.shareIn(scope = scope, SharingStarted.Lazily, 1) as SharedFlow<Any>
+        stateMap[R::class.java] = sharedMap[R::class.java]!!
+            .asLiveData(context = scope.coroutineContext)
+    }
+
+
+    override suspend fun dispatchWithCoroutine(action: Any) {
+        middleWareDispatchHead.dispatchAction(action = action)
+    }
+
+    override fun <T> getState(stateClass: Class<T>): MutableLiveData<T> {
+        return stateMap[stateClass]!! as MutableLiveData<T>
+    }
+
+    override suspend fun dispatchAction(action: Any) {
+        _reducerMap[action::class.java]!!.send(action)
     }
 }
 
+interface StoreDispatch {
+    fun dispatch(action: Any)
+    suspend fun dispatchWithCoroutine(action: Any)
+}
 
-abstract class Reducer<S, A>(val stateClass: Class<S>, val actionClass: Class<A>) {
+interface StoreState {
+    fun <T> getState(stateClass: Class<T>): MutableLiveData<T>
+}
+
+
+abstract class Reducer<S, A>(
+    val stateClass: Class<S>,
+    val actionClass: Class<A>
+) {
     abstract fun reduce(state: S, flow: Flow<A>): Flow<S>
 
 }
 
 
-class StoreViewModelFactory(val list: List<Reducer<out Any, out Any>>?) :
+fun interface MiddleWareDispatch {
+    suspend fun dispatchAction(action: Any)
+}
+
+fun interface MiddleWare {
+    suspend operator fun invoke(store: StoreViewModel): (MiddleWareDispatch) -> MiddleWareDispatch
+}
+
+
+class StoreViewModelFactory(
+    val list: List<Reducer<out Any, out Any>>?,
+    val middleWares: List<MiddleWare>
+) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (StoreViewModel::class.java.isAssignableFrom(modelClass)) {
-            return StoreViewModel(list = list!! as List<Reducer<Any, Any>>) as T
+            return StoreViewModel(list = list!! as List<Reducer<Any, Any>>, middleWares) as T
         }
         throw RuntimeException("unknown class:" + modelClass.name)
     }
@@ -73,12 +147,13 @@ class StoreViewModelFactory(val list: List<Reducer<out Any, out Any>>?) :
 @Composable
 fun storeViewModel(
     list: List<Reducer<out Any, out Any>>? = null,
+    middleWares: List<MiddleWare> = emptyList(),
     viewModelStoreOwner: ViewModelStoreOwner = checkNotNull(LocalContext.current as ViewModelStoreOwner) {
         "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
     }
 ): StoreViewModel =
     viewModel(
         StoreViewModel::class.java,
-        factory = StoreViewModelFactory(list = list),
+        factory = StoreViewModelFactory(list = list, middleWares = middleWares),
         viewModelStoreOwner = viewModelStoreOwner
     )
