@@ -2,6 +2,7 @@ package com.iffly.webrtc_compose.ui.call
 
 import android.Manifest
 import android.app.Activity
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -86,7 +87,9 @@ fun CallScreen(outGoing: Boolean = false, userId: String = "") {
 
 @Composable
 fun CallScreenWithPermission(callViewSate: CallViewSate, store: StoreViewModel) {
-    val callSessionCallback by rememberUpdatedState(StoreCallSessionCallback(store = store))
+    val callSessionCallback by remember {
+        mutableStateOf(StoreCallSessionCallback(store = store))
+    }
     val surfaceView = callViewSate.remoteSurfaceView
     val callState = callViewSate.callState
     val localSurfaceView = callViewSate.localSurfaceView
@@ -177,6 +180,10 @@ private fun handlePermissionResult(store: StoreViewModel, map: MutableMap<String
 
 
 private class StoreCallSessionCallback(val store: StoreViewModel) : CallSessionCallback {
+    init {
+        Log.i("myyf", "new callback")
+    }
+
     override fun didCallEndWithReason(var1: CallEndReason?) {
         store.dispatch(
             CallViewAction(
