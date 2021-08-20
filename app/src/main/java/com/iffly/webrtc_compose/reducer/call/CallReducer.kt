@@ -9,7 +9,6 @@ import com.iffly.rtcchat.SkyEngineKit
 import com.iffly.webrtc_compose.App
 import com.iffly.webrtc_compose.reducer.call.CallViewAction.Companion.PERMISSION_KEY
 import com.iffly.webrtc_compose.voip.VoipEvent
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -95,12 +94,14 @@ class CallReducer :
 
                 }
                 CallViewAction.CallViewActionValue.CreateLocal -> {
-
-                    val surfaceView: View? =
-                        SkyEngineKit.instance().currentSession?.setupLocalVideo(true)
-                    if (surfaceView != null && surfaceView is SurfaceView) {
-                        surfaceView.setZOrderMediaOverlay(true)
-                        state.copy(localSurfaceView = surfaceView)
+                    if (state.localSurfaceView == null) {
+                        val surfaceView: View? =
+                            SkyEngineKit.instance().currentSession?.setupLocalVideo(true)
+                        if (surfaceView != null && surfaceView is SurfaceView) {
+                            surfaceView.setZOrderMediaOverlay(true)
+                            state.copy(localSurfaceView = surfaceView)
+                        } else
+                            state.copy()
                     } else {
                         state.copy()
                     }
