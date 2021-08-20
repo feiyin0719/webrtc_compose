@@ -2,7 +2,6 @@ package com.iffly.webrtc_compose.ui.call
 
 import android.Manifest
 import android.app.Activity
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -68,8 +67,10 @@ fun CallScreen(outGoing: Boolean = false, userId: String = "") {
     val close = callViewSate.closeState
     if (close) {
         LaunchedEffect(close) {
-            if (close && activity is Activity)
+            if (close && activity is Activity){
+                SkyEngineKit.instance().endCall()
                 activity.finish()
+            }
         }
     } else {
         if (callViewSate.havePermission) {
@@ -97,7 +98,7 @@ fun CallScreenWithPermission(callViewSate: CallViewSate, store: StoreViewModel) 
     val initComplete = callViewSate.initCallComplete
     LaunchedEffect(initComplete) {
         if (initComplete) {
-            val session = SkyEngineKit.Instance().currentSession
+            val session = SkyEngineKit.instance().currentSession
             session?.setSessionCallback(callSessionCallback)
         }
     }
@@ -182,23 +183,23 @@ private fun handlePermissionResult(store: StoreViewModel, map: MutableMap<String
 
 private class StoreCallSessionCallback(val store: StoreViewModel) : CallSessionCallback {
 
-    override fun didCallEndWithReason(var1: CallEndReason?) {
+    override fun didCallEndWithReason(var1: CallEndReason) {
         store.dispatch(
             CallViewAction(
                 CallViewAction.CallViewActionValue.EndCall,
                 mapOf(
-                    CallViewAction.REASON_KEY to (var1 ?: CallEndReason.SignalError)
+                    CallViewAction.REASON_KEY to (var1)
                 )
             )
         )
     }
 
-    override fun didChangeState(var1: CallState?) {
+    override fun didChangeState(var1: CallState) {
         store.dispatch(
             CallViewAction(
                 CallViewAction.CallViewActionValue.ChangeState,
                 mapOf(
-                    CallViewAction.STATE_KEY to (var1 ?: CallState.Incoming)
+                    CallViewAction.STATE_KEY to (var1)
                 )
             )
         )
@@ -226,45 +227,45 @@ private class StoreCallSessionCallback(val store: StoreViewModel) : CallSessionC
         )
     }
 
-    override fun didReceiveRemoteVideoTrack(userId: String?) {
+    override fun didReceiveRemoteVideoTrack(userId: String) {
         store.dispatch(
             CallViewAction(
                 CallViewAction.CallViewActionValue.CreateRemote,
                 mapOf(
-                    CallViewAction.USER_KEY to (userId ?: "")
+                    CallViewAction.USER_KEY to (userId)
                 )
             )
         )
     }
 
-    override fun didUserLeave(userId: String?) {
+    override fun didUserLeave(userId: String) {
         store.dispatch(
             CallViewAction(
                 CallViewAction.CallViewActionValue.UserLeave,
                 mapOf(
-                    CallViewAction.USER_KEY to (userId ?: "")
+                    CallViewAction.USER_KEY to (userId)
                 )
             )
         )
     }
 
-    override fun didError(error: String?) {
+    override fun didError(error: String) {
         store.dispatch(
             CallViewAction(
                 CallViewAction.CallViewActionValue.Error,
                 mapOf(
-                    CallViewAction.ERROR_KEY to (error ?: "")
+                    CallViewAction.ERROR_KEY to (error)
                 )
             )
         )
     }
 
-    override fun didDisconnected(userId: String?) {
+    override fun didDisconnected(userId: String) {
         store.dispatch(
             CallViewAction(
                 CallViewAction.CallViewActionValue.Disconnect,
                 mapOf(
-                    CallViewAction.USER_KEY to (userId ?: "")
+                    CallViewAction.USER_KEY to (userId)
                 )
             )
         )

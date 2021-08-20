@@ -8,10 +8,9 @@ import com.iffly.rtcchat.inter.ISkyEvent
 import com.iffly.webrtc_compose.App
 import com.iffly.webrtc_compose.R
 import com.iffly.webrtc_compose.socket.SocketManager
-import com.iffly.webrtc_compose.voip.VoipEvent
 
 
-class VoipEvent : ISkyEvent {
+object VoipEvent : ISkyEvent {
     private val ringPlayer: AsyncPlayer = AsyncPlayer(null)
     override fun createRoom(room: String, roomSize: Int) {
         SocketManager.createRoom(room, roomSize)
@@ -85,8 +84,8 @@ class VoipEvent : ISkyEvent {
         ringPlayer.stop()
     }
 
-    companion object {
-        private const val TAG = "VoipEvent"
-    }
+
+    private const val TAG = "VoipEvent"
+
 
 }

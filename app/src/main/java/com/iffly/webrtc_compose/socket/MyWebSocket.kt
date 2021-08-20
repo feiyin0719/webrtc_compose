@@ -12,7 +12,7 @@ import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
 import javax.net.ssl.X509TrustManager
 
-class MyWebSocket(serverUri: URI?, private val iEvent: IEvent) : WebSocketClient(serverUri) {
+class MyWebSocket(serverUri: URI, private val iEvent: IEvent) : WebSocketClient(serverUri) {
     private var connectFlag = false
     override fun onClose(code: Int, reason: String, remote: Boolean) {
         Log.e("dds_error", "onClose:" + reason + "remote:" + remote)
