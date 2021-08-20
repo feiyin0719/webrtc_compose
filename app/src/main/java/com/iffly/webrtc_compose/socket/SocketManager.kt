@@ -32,8 +32,7 @@ object SocketManager : IEvent {
 
     fun connect(url: String, userId: String, device: Int) {
         if (webSocket == null || !webSocket!!.isOpen) {
-            val uri: URI
-            uri = try {
+            val uri: URI = try {
                 val urls = "$url/$userId/$device"
                 URI(urls)
             } catch (e: URISyntaxException) {

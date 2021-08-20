@@ -8,6 +8,12 @@ import com.iffly.rtcchat.engine.EngineCallback
 import com.iffly.rtcchat.engine.webrtc.WebRtcEngine
 import com.iffly.rtcchat.inter.ISkyEvent
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.sample
 import org.webrtc.IceCandidate
 import org.webrtc.SessionDescription
 import java.lang.ref.WeakReference
@@ -24,7 +30,6 @@ interface CallSessionCallback {
     fun didDisconnected(userId: String)
 }
 
-@DelicateCoroutinesApi
 class CallSession(
     context: Context,
     var roomId: String,
@@ -34,6 +39,11 @@ class CallSession(
     EngineCallback {
     private var sessionCallback: WeakReference<CallSessionCallback>? = null
     private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+    private val coroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
+
+    private val channel: Channel<Pair<String, IceCandidate?>> =
+        Channel(10, BufferOverflow.DROP_OLDEST)
+
 
     //------------------------------------各种参数----------------------------------------------/
 
@@ -60,14 +70,14 @@ class CallSession(
     // ----------------------------------------各种控制--------------------------------------------
     // 创建房间
     fun createHome(room: String, roomSize: Int) {
-        GlobalScope.launch(dispatcher) {
+        coroutineScope.launch {
             mEvent.createRoom(room, roomSize)
         }
     }
 
     // 加入房间
     fun joinHome(roomId: String) {
-        GlobalScope.launch(dispatcher) {
+        coroutineScope.launch {
             state = CallState.Connecting
             Log.d(TAG, "joinHome mEvent = $mEvent")
             isComing = true
@@ -87,14 +97,14 @@ class CallSession(
 
     // 发送响铃回复
     fun sendRingBack(targetId: String, room: String) {
-        GlobalScope.launch(dispatcher) {
+        coroutineScope.launch {
             mEvent.sendRingBack(targetId, room)
         }
     }
 
     // 发送拒绝信令
     fun sendRefuse() {
-        GlobalScope.launch(dispatcher) {
+        coroutineScope.launch {
             mEvent.sendRefuse(roomId, mTargetId, RefuseType.Hangup.ordinal)
         }
         release(CallEndReason.Hangup)
@@ -102,7 +112,7 @@ class CallSession(
 
     // 发送忙时拒绝
     fun sendBusyRefuse(room: String, targetId: String) {
-        GlobalScope.launch(dispatcher) {
+        coroutineScope.launch {
             mEvent.sendRefuse(room, targetId, RefuseType.Busy.ordinal)
         }
         release(CallEndReason.Hangup)
@@ -110,7 +120,7 @@ class CallSession(
 
     // 发送取消信令
     fun sendCancel() {
-        GlobalScope.launch(dispatcher) {
+        coroutineScope.launch {
             // 取消拨出
             val list: MutableList<String> = ArrayList()
             list.add(mTargetId)
@@ -122,7 +132,7 @@ class CallSession(
 
     // 离开房间
     fun leave() {
-        GlobalScope.launch(dispatcher) {
+        coroutineScope.launch {
             mEvent.sendLeave(roomId, mMyId)
         }
         // 释放变量
@@ -131,7 +141,7 @@ class CallSession(
 
     // 切换到语音接听
     fun sendTransAudio() {
-        GlobalScope.launch(dispatcher) {
+        coroutineScope.launch {
             mEvent.sendTransAudio(mTargetId)
         }
     }
@@ -169,7 +179,7 @@ class CallSession(
 
     // 释放资源
     private fun release(reason: CallEndReason) {
-        GlobalScope.launch(dispatcher) {
+        coroutineScope.launch(Dispatchers.Main) {
 
             // 释放内容
             iEngine.release()
@@ -179,9 +189,10 @@ class CallSession(
             //界面回调
 
             sessionCallback?.get()?.didCallEndWithReason(reason)
-
+            coroutineScope.cancel()
 
         }
+
     }
 
     //------------------------------------receive---------------------------------------------------
@@ -191,7 +202,7 @@ class CallSession(
         mRoomSize = roomSize
         startTime = 0
 
-        GlobalScope.launch(dispatcher) {
+        coroutineScope.launch {
             mMyId = myId
             val strings: List<String>
             if (!TextUtils.isEmpty(users)) {
@@ -222,7 +233,7 @@ class CallSession(
 
     // 新成员进入
     fun newPeer(userId: String?) {
-        GlobalScope.launch(dispatcher) {
+        coroutineScope.launch {
 
             // 其他人加入房间
             iEngine.userIn(userId!!)
@@ -259,7 +270,7 @@ class CallSession(
 
     // 对方网络断开
     fun onDisConnect(userId: String?, reason: CallEndReason?) {
-        GlobalScope.launch(dispatcher) { iEngine.disconnected(userId!!, reason!!) }
+        coroutineScope.launch { iEngine.disconnected(userId!!, reason!!) }
     }
 
     // 对方取消拨出
@@ -270,15 +281,15 @@ class CallSession(
     }
 
     fun onReceiveOffer(userId: String?, description: String?) {
-        GlobalScope.launch(dispatcher) { iEngine.receiveOffer(userId!!, description!!) }
+        coroutineScope.launch { iEngine.receiveOffer(userId!!, description!!) }
     }
 
     fun onReceiverAnswer(userId: String?, sdp: String?) {
-        GlobalScope.launch(dispatcher) { iEngine.receiveAnswer(userId!!, sdp!!) }
+        coroutineScope.launch { iEngine.receiveAnswer(userId!!, sdp!!) }
     }
 
     fun onRemoteIceCandidate(userId: String?, id: String?, label: Int, candidate: String?) {
-        GlobalScope.launch(dispatcher) {
+        coroutineScope.launch {
             iEngine.receiveIceCandidate(
                 userId!!,
                 id!!,
@@ -296,7 +307,7 @@ class CallSession(
             sessionCallback?.get()?.didUserLeave(userId)
 
         }
-        GlobalScope.launch(dispatcher) { iEngine.leaveRoom(userId) }
+        coroutineScope.launch { iEngine.leaveRoom(userId) }
     }
 
     fun setupLocalVideo(isOverlay: Boolean): View? {
@@ -339,7 +350,7 @@ class CallSession(
     override fun exitRoom() {
         // 状态设置为Idle
         if (mRoomSize == 2) {
-            GlobalScope.launch(Dispatchers.Main) { release(CallEndReason.RemoteHangup) }
+            coroutineScope.launch(Dispatchers.Main) { release(CallEndReason.RemoteHangup) }
         }
     }
 
@@ -354,34 +365,27 @@ class CallSession(
     }
 
     override fun disconnected(reason: CallEndReason) {
-        GlobalScope.launch(Dispatchers.Main) {
+        coroutineScope.launch(Dispatchers.Main) {
             shouldStopRing()
             release(reason)
         }
     }
 
     override fun onSendIceCandidate(userId: String, candidate: IceCandidate?) {
-        GlobalScope.launch(dispatcher) {
-            delay(100)
-            Log.d("dds_test", "onSendIceCandidate")
-            mEvent.sendIceCandidate(
-                userId,
-                candidate!!.sdpMid,
-                candidate.sdpMLineIndex,
-                candidate.sdp
-            )
+        coroutineScope.launch {
+            channel.send(Pair(userId, candidate))
         }
     }
 
     override fun onSendOffer(userId: String, description: SessionDescription?) {
-        GlobalScope.launch(dispatcher) {
+        coroutineScope.launch {
             Log.d("dds_test", "onSendOffer")
             mEvent.sendOffer(userId, description!!.description)
         }
     }
 
     override fun onSendAnswer(userId: String, description: SessionDescription?) {
-        GlobalScope.launch(dispatcher) {
+        coroutineScope.launch {
             Log.d("dds_test", "onSendAnswer")
             mEvent.sendAnswer(userId, description!!.description)
         }
@@ -414,5 +418,20 @@ class CallSession(
 
     init {
         iEngine.init(this)
+        coroutineScope.launch {
+            channel.consumeAsFlow()
+                .buffer(10, BufferOverflow.DROP_OLDEST)
+                .sample(100).collect {
+                    it.second?.let { candidate ->
+                        Log.d("dds_test", "onSendIceCandidate")
+                        mEvent.sendIceCandidate(
+                            it.first,
+                            candidate.sdpMid,
+                            candidate.sdpMLineIndex,
+                            candidate.sdp
+                        )
+                    }
+                }
+        }
     }
 }

@@ -7,7 +7,6 @@ import com.iffly.rtcchat.inter.ISkyEvent
 import kotlinx.coroutines.DelicateCoroutinesApi
 
 
-@DelicateCoroutinesApi
 class SkyEngineKit {
     // 获取对话实例
     var currentSession: CallSession? = null

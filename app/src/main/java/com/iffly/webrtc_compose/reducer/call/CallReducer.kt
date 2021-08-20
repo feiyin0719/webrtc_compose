@@ -71,7 +71,6 @@ data class CallViewAction(
     }
 }
 
-@DelicateCoroutinesApi
 class CallReducer :
     Reducer<CallViewSate, CallViewAction>(CallViewSate::class.java, CallViewAction::class.java) {
     override fun reduce(state: CallViewSate, flow: Flow<CallViewAction>): Flow<CallViewSate> {
