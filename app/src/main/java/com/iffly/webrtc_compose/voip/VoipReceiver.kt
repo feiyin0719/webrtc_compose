@@ -20,7 +20,7 @@ class VoipReceiver : BroadcastReceiver() {
             var inviteUserName = intent.getStringExtra("inviteUserName")
             val userList = intent.getStringExtra("userList")
             val list = userList!!.split(",").toTypedArray()
-            SkyEngineKit.init(VoipEvent())
+            SkyEngineKit.init(VoipEvent)
 
             if (inviteUserName == null) {
                 inviteUserName = "p2pChat"

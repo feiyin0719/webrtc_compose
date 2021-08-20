@@ -6,7 +6,6 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import com.iffly.rtcchat.CallEndReason
-import com.iffly.rtcchat.CallSession
 import com.iffly.rtcchat.SkyEngineKit
 import com.iffly.webrtc_compose.App
 import com.iffly.webrtc_compose.socket.MyWebSocket.TrustManagerTest
@@ -180,19 +179,13 @@ object SocketManager : IEvent {
 
     override fun onCancel(inviteId: String) {
         handler.post {
-            val currentSession: CallSession? = SkyEngineKit.Instance().currentSession
-            if (currentSession != null) {
-                currentSession.onCancel(inviteId)
-            }
+            SkyEngineKit.instance().currentSession?.onCancel(inviteId)
         }
     }
 
     override fun onRing(fromId: String) {
         handler.post {
-            val currentSession: CallSession? = SkyEngineKit.Instance().currentSession
-            if (currentSession != null) {
-                currentSession.onRingBack(fromId)
-            }
+            SkyEngineKit.instance().currentSession?.onRingBack(fromId)
         }
     }
 
@@ -201,64 +194,48 @@ object SocketManager : IEvent {
         handler.post {
 
             //自己进入了房间，然后开始发送offer
-            val currentSession: CallSession? = SkyEngineKit.Instance().currentSession
-            if (currentSession != null) {
-                currentSession.onJoinHome(myId, connections, roomSize)
-            }
+            SkyEngineKit.instance().currentSession?.onJoinHome(myId, connections, roomSize)
         }
     }
 
     override fun onNewPeer(userId: String) {
         handler.post {
-            val currentSession: CallSession? = SkyEngineKit.Instance().currentSession
-            if (currentSession != null) {
-                currentSession.newPeer(userId)
-            }
+            SkyEngineKit.instance().currentSession?.newPeer(userId)
         }
     }
 
     override fun onReject(userId: String, type: Int) {
         handler.post {
-            val currentSession: CallSession? = SkyEngineKit.Instance().currentSession
-            if (currentSession != null) {
-                currentSession.onRefuse(userId, type)
-            }
+            SkyEngineKit.instance().currentSession?.onRefuse(userId, type)
         }
     }
 
     override fun onOffer(userId: String, sdp: String) {
         handler.post {
-            val currentSession: CallSession? = SkyEngineKit.Instance().currentSession
-            if (currentSession != null) {
-                currentSession.onReceiveOffer(userId, sdp)
-            }
+            SkyEngineKit.instance().currentSession?.onReceiveOffer(userId, sdp)
         }
     }
 
     override fun onAnswer(userId: String, sdp: String) {
         handler.post {
-            val currentSession: CallSession? = SkyEngineKit.Instance().currentSession
-            if (currentSession != null) {
-                currentSession.onReceiverAnswer(userId, sdp)
-            }
+            SkyEngineKit.instance().currentSession?.onReceiverAnswer(userId, sdp)
         }
     }
 
     override fun onIceCandidate(userId: String, id: String, label: Int, candidate: String) {
         handler.post {
-            val currentSession: CallSession? = SkyEngineKit.Instance().currentSession
-            if (currentSession != null) {
-                currentSession.onRemoteIceCandidate(userId, id, label, candidate)
-            }
+            SkyEngineKit.instance().currentSession?.onRemoteIceCandidate(
+                userId,
+                id,
+                label,
+                candidate
+            )
         }
     }
 
     override fun onLeave(userId: String) {
         handler.post {
-            val currentSession: CallSession? = SkyEngineKit.Instance().currentSession
-            if (currentSession != null) {
-                currentSession.onLeave(userId)
-            }
+            SkyEngineKit.instance().currentSession?.onLeave(userId)
         }
     }
 
@@ -272,19 +249,16 @@ object SocketManager : IEvent {
 
     override fun onTransAudio(userId: String) {
         handler.post {
-            val currentSession: CallSession? = SkyEngineKit.Instance().currentSession
-            if (currentSession != null) {
-                currentSession.onTransAudio(userId)
-            }
+            SkyEngineKit.instance().currentSession?.onTransAudio(userId)
         }
     }
 
     override fun onDisConnect(userId: String) {
         handler.post {
-            val currentSession: CallSession? = SkyEngineKit.Instance().currentSession
-            if (currentSession != null) {
-                currentSession.onDisConnect(userId, CallEndReason.RemoteSignalError)
-            }
+            SkyEngineKit.instance().currentSession?.onDisConnect(
+                userId,
+                CallEndReason.RemoteSignalError
+            )
         }
     }
 

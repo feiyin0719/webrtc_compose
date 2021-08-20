@@ -4,8 +4,10 @@ import android.content.Context
 import android.util.Log
 import com.iffly.rtcchat.except.NotInitializedException
 import com.iffly.rtcchat.inter.ISkyEvent
+import kotlinx.coroutines.DelicateCoroutinesApi
 
 
+@DelicateCoroutinesApi
 class SkyEngineKit {
     // 获取对话实例
     var currentSession: CallSession? = null
@@ -13,8 +15,7 @@ class SkyEngineKit {
     private var mEvent: ISkyEvent? = null
     var isAudioOnly = false
         private set
-    var isOutGoing = false
-        private set
+    private var isOutGoing = false
 
     fun sendRefuseOnPermissionDenied(room: String, inviteId: String) {
         // 未初始化
@@ -56,7 +57,7 @@ class SkyEngineKit {
         isAudioOnly = audioOnly
         isOutGoing = true
         // 初始化会话
-        currentSession = CallSession(context, room!!, audioOnly, mEvent!!)
+        currentSession = CallSession(context, room, audioOnly, mEvent!!)
         currentSession!!.setTargetId(targetId)
         currentSession!!.isComing = false
         currentSession!!.setCallState(CallState.Outgoing)
@@ -84,7 +85,7 @@ class SkyEngineKit {
         isOutGoing = false
         isAudioOnly = audioOnly
         // 初始化会话
-        currentSession = CallSession(context, room!!, audioOnly, mEvent!!)
+        currentSession = CallSession(context, room, audioOnly, mEvent!!)
         currentSession!!.setTargetId(targetId)
         currentSession!!.isComing = true
         currentSession!!.setCallState(CallState.Incoming)
@@ -98,11 +99,11 @@ class SkyEngineKit {
     // 挂断会话
     fun endCall() {
         Log.d(TAG, "endCall mCurrentCallSession != null is " + (currentSession != null))
-        if (currentSession != null) {
+        if (currentSession != null && currentSession!!.state != CallState.Idle) {
             // 停止响铃
             currentSession!!.shouldStopRing()
             if (currentSession!!.isComing) {
-                if (currentSession!!.state === CallState.Incoming) {
+                if (currentSession!!.state == CallState.Incoming) {
                     // 接收到邀请，还没同意，发送拒绝
                     currentSession!!.sendRefuse()
                 } else {
@@ -110,7 +111,7 @@ class SkyEngineKit {
                     currentSession!!.leave()
                 }
             } else {
-                if (currentSession!!.state === CallState.Outgoing) {
+                if (currentSession!!.state == CallState.Outgoing) {
                     currentSession!!.sendCancel()
                 } else {
                     // 已经接通，挂断电话
@@ -132,7 +133,7 @@ class SkyEngineKit {
             Log.e(TAG, "joinRoom error,currentCallSession is exist")
             return
         }
-        currentSession = CallSession(context, room!!, false, mEvent!!)
+        currentSession = CallSession(context, room, false, mEvent!!)
         currentSession!!.isComing = true
         currentSession!!.joinHome(room)
     }
@@ -147,7 +148,7 @@ class SkyEngineKit {
             Log.e(TAG, "joinRoom error,currentCallSession is exist")
             return
         }
-        currentSession = CallSession(context, room!!, false, mEvent!!)
+        currentSession = CallSession(context, room, false, mEvent!!)
         currentSession!!.isComing = false
         currentSession!!.createHome(room, 9)
     }
@@ -171,7 +172,7 @@ class SkyEngineKit {
     companion object {
         private const val TAG = "dds_AVEngineKit"
         private var avEngineKit: SkyEngineKit? = null
-        fun Instance(): SkyEngineKit {
+        fun instance(): SkyEngineKit {
             var skyEngineKit: SkyEngineKit
             return if (avEngineKit.also { skyEngineKit = it!! } != null) {
                 skyEngineKit

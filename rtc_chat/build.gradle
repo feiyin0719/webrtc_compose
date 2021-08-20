@@ -38,6 +38,8 @@ dependencies {
     implementation Libs.AndroidX.Appcompat.appCompat
     implementation Libs.Material.material
     api Libs.Webrtc.webRct
+    implementation Libs.Coroutines.android
+    implementation Libs.Coroutines.core
     testImplementation Libs.JUnit.junit
     androidTestImplementation Libs.AndroidX.Test.Ext.junit
     androidTestImplementation Libs.AndroidX.Test.espressoCore

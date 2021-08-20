@@ -23,8 +23,9 @@ import org.webrtc.audio.JavaAudioDeviceModule
 import java.util.concurrent.ConcurrentHashMap
 
 
-class WebRtcEngine : IEngine, IPeerEvent {
-    private val TAG = "WebRTCEngine"
+class WebRtcEngine// 初始化ice地址
+    (var mIsAudioOnly: Boolean, private val mContext: Context) : IEngine, IPeerEvent {
+
     private var _factory: PeerConnectionFactory? = null
     private var mRootEglBase: EglBase? = null
     private var _localStream: MediaStream? = null
@@ -38,13 +39,6 @@ class WebRtcEngine : IEngine, IPeerEvent {
     private var localRenderer: SurfaceViewRenderer? = null
 
 
-    private val VIDEO_TRACK_ID = "ARDAMSv0"
-    private val AUDIO_TRACK_ID = "ARDAMSa0"
-    val VIDEO_CODEC_H264 = "H264"
-    private val VIDEO_RESOLUTION_WIDTH = 640
-    private val VIDEO_RESOLUTION_HEIGHT = 480
-    private val FPS = 20
-
     // 对话实例列表
     private val peers: ConcurrentHashMap<String, Peer> = ConcurrentHashMap()
 
@@ -53,18 +47,9 @@ class WebRtcEngine : IEngine, IPeerEvent {
 
     private lateinit var mCallback: EngineCallback
 
-    var mIsAudioOnly = false
-    private var mContext: Context? = null
+
     private var audioManager: AudioManager? = null
     private var isSpeakerOn = true
-
-    constructor(mIsAudioOnly: Boolean, mContext: Context) {
-        this.mIsAudioOnly = mIsAudioOnly
-        this.mContext = mContext
-        audioManager = mContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        // 初始化ice地址
-        initIceServer()
-    }
 
 
     // -----------------------------------对外方法------------------------------------------
@@ -89,7 +74,7 @@ class WebRtcEngine : IEngine, IPeerEvent {
             // add localStream
             peer.addLocalStream(_localStream)
             // 添加列表
-            peers.put(id, peer)
+            peers[id] = peer
         }
 
         mCallback.joinRoomSucc()
@@ -98,11 +83,7 @@ class WebRtcEngine : IEngine, IPeerEvent {
             toggleHeadset(true)
         } else {
             if (mIsAudioOnly) toggleSpeaker(false) else {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    audioManager?.setMode(AudioManager.MODE_IN_COMMUNICATION)
-                } else {
-                    audioManager?.setMode(AudioManager.MODE_IN_CALL)
-                }
+                audioManager?.mode = AudioManager.MODE_IN_COMMUNICATION
             }
         }
     }
@@ -114,7 +95,7 @@ class WebRtcEngine : IEngine, IPeerEvent {
         // add localStream
         peer.addLocalStream(_localStream)
         // 添加列表
-        peers.put(userId, peer)
+        peers[userId] = peer
         // createOffer
         peer.createOffer()
     }
@@ -140,7 +121,7 @@ class WebRtcEngine : IEngine, IPeerEvent {
     }
 
     override fun receiveOffer(userId: String, description: String) {
-        val peer: Peer? = peers.get(userId)
+        val peer: Peer? = peers[userId]
         peer?.let {
             val sdp = SessionDescription(SessionDescription.Type.OFFER, description)
             it.setOffer(false)
@@ -151,7 +132,7 @@ class WebRtcEngine : IEngine, IPeerEvent {
 
     override fun receiveAnswer(userId: String, sdp: String) {
         Log.d("dds_test", "receiveAnswer--$userId")
-        val peer: Peer? = peers.get(userId)
+        val peer: Peer? = peers[userId]
         peer?.let {
             val sessionDescription = SessionDescription(SessionDescription.Type.ANSWER, sdp)
             it.setRemoteDescription(sessionDescription)
@@ -160,7 +141,7 @@ class WebRtcEngine : IEngine, IPeerEvent {
 
     override fun receiveIceCandidate(userId: String, id: String, label: Int, candidate: String) {
         Log.d("dds_test", "receiveIceCandidate--$userId")
-        val peer: Peer? = peers.get(userId)
+        val peer: Peer? = peers[userId]
         peer?.let {
             val iceCandidate = IceCandidate(id, label, candidate)
             it.addRemoteIceCandidate(iceCandidate)
@@ -168,20 +149,20 @@ class WebRtcEngine : IEngine, IPeerEvent {
     }
 
     override fun leaveRoom(userId: String) {
-        val peer: Peer? = peers.get(userId)
+        val peer: Peer? = peers[userId]
         if (peer != null) {
             peer.close()
             peers.remove(userId)
         }
         Log.d(
             TAG,
-            "leaveRoom peers.size() = " + peers.size.toString() + "; mCallback = " + mCallback
+            "leaveRoom peers.size() =  ${peers.size} ; mCallback = ${mCallback}"
         )
         if (peers.size <= 1) {
 
             mCallback.exitRoom()
 
-            if (peers.size === 1) {
+            if (peers.size == 1) {
                 peers.forEach {
                     it.value.close()
                 }
@@ -253,7 +234,7 @@ class WebRtcEngine : IEngine, IPeerEvent {
             Log.e(TAG, "setupRemoteVideo userId is null ")
             return null
         }
-        val peer: Peer = peers.get(userId) ?: return null
+        val peer: Peer = peers[userId] ?: return null
         if (peer.renderer == null) {
             peer.createRender(mRootEglBase!!, mContext, isO)
         }
@@ -270,14 +251,13 @@ class WebRtcEngine : IEngine, IPeerEvent {
         isSwitch = true
         if (captureAndroid == null) return
         if (captureAndroid is CameraVideoCapturer) {
-            val cameraVideoCapturer = captureAndroid as CameraVideoCapturer
+            val cameraVideoCapture = captureAndroid as CameraVideoCapturer
             try {
-                cameraVideoCapturer.switchCamera(object : CameraSwitchHandler {
+                cameraVideoCapture.switchCamera(object : CameraSwitchHandler {
                     override fun onCameraSwitchDone(isFrontCamera: Boolean) {
-                        if(isFrontCamera){
+                        if (isFrontCamera) {
                             localRenderer?.setMirror(true)
-                        }
-                        else{
+                        } else {
                             localRenderer?.setMirror(false)
                         }
                         isSwitch = false
@@ -291,7 +271,7 @@ class WebRtcEngine : IEngine, IPeerEvent {
                 isSwitch = false
             }
         } else {
-            Log.d(TAG, "Will not switch camera, video caputurer is not a camera")
+            Log.d(TAG, "Will not switch camera, video capture is not a camera")
         }
     }
 
@@ -306,30 +286,25 @@ class WebRtcEngine : IEngine, IPeerEvent {
     override fun toggleSpeaker(enable: Boolean): Boolean {
         audioManager?.let { audioManager ->
             isSpeakerOn = enable
-            audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION)
+            audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
             if (enable) {
                 audioManager.setStreamVolume(
                     AudioManager.STREAM_VOICE_CALL,
                     audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL),
                     AudioManager.FX_KEY_CLICK
                 )
-                audioManager.setSpeakerphoneOn(true)
+                audioManager.isSpeakerphoneOn = true
             } else {
                 //5.0以上
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    //设置mode
-                    audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION)
-                } else {
-                    //设置mode
-                    audioManager.setMode(AudioManager.MODE_IN_CALL)
-                }
+                //设置mode
+                audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
                 //设置音量，解决有些机型切换后没声音或者声音突然变大的问题
                 audioManager.setStreamVolume(
                     AudioManager.STREAM_VOICE_CALL,
                     audioManager.getStreamVolume(AudioManager.STREAM_VOICE_CALL),
                     AudioManager.FX_KEY_CLICK
                 )
-                audioManager.setSpeakerphoneOn(false)
+                audioManager.isSpeakerphoneOn = false
             }
             return true
         }
@@ -340,14 +315,9 @@ class WebRtcEngine : IEngine, IPeerEvent {
         audioManager?.let { audioManager ->
             if (isHeadset) {
                 //5.0以上
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    //设置mode
-                    audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION)
-                } else {
-                    //设置mode
-                    audioManager.setMode(AudioManager.MODE_IN_CALL)
-                }
-                audioManager.setSpeakerphoneOn(false)
+                //设置mode
+                audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
+                audioManager.isSpeakerphoneOn = false
             } else {
                 if (mIsAudioOnly) {
                     toggleSpeaker(isSpeakerOn)
@@ -363,15 +333,15 @@ class WebRtcEngine : IEngine, IPeerEvent {
                 val audioDevices: Array<AudioDeviceInfo> =
                     audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
                 for (deviceInfo in audioDevices) {
-                    if (deviceInfo.getType() === AudioDeviceInfo.TYPE_WIRED_HEADPHONES
-                        || deviceInfo.getType() === AudioDeviceInfo.TYPE_WIRED_HEADSET
+                    if (deviceInfo.type == AudioDeviceInfo.TYPE_WIRED_HEADPHONES
+                        || deviceInfo.type == AudioDeviceInfo.TYPE_WIRED_HEADSET
                     ) {
                         return true
                     }
                 }
                 false
             } else {
-                audioManager.isWiredHeadsetOn()
+                audioManager.isWiredHeadsetOn
             }
         }
         return false
@@ -380,7 +350,7 @@ class WebRtcEngine : IEngine, IPeerEvent {
 
     override fun release() {
         if (audioManager != null) {
-            audioManager!!.setMode(AudioManager.MODE_NORMAL)
+            audioManager!!.mode = AudioManager.MODE_NORMAL
         }
 
         peers.forEach {
@@ -429,7 +399,7 @@ class WebRtcEngine : IEngine, IPeerEvent {
      *
      * @return PeerConnectionFactory
      */
-    fun createConnectionFactory(): PeerConnectionFactory? {
+    private fun createConnectionFactory(): PeerConnectionFactory? {
 
         // 1. 初始化的方法，必须在开始之前调用
         PeerConnectionFactory.initialize(
@@ -463,7 +433,7 @@ class WebRtcEngine : IEngine, IPeerEvent {
     /**
      * 创建本地流
      */
-    fun createLocalStream() {
+    private fun createLocalStream() {
         if (_factory != null) {
             _localStream = _factory!!.createLocalMediaStream("ARDAMS")
             // 音频
@@ -473,7 +443,7 @@ class WebRtcEngine : IEngine, IPeerEvent {
 
             // 视频
             if (!mIsAudioOnly) {
-                captureAndroid = createVideoCapture()
+                captureAndroid = createVideoCapturer()
                 surfaceTextureHelper =
                     SurfaceTextureHelper.create("CaptureThread", mRootEglBase!!.eglBaseContext)
                 videoSource = _factory!!.createVideoSource(captureAndroid!!.isScreencast)
@@ -483,8 +453,8 @@ class WebRtcEngine : IEngine, IPeerEvent {
                     videoSource?.getCapturerObserver()
                 )
                 captureAndroid!!.startCapture(VIDEO_RESOLUTION_WIDTH, VIDEO_RESOLUTION_HEIGHT, FPS)
-                val _localVideoTrack = _factory!!.createVideoTrack(VIDEO_TRACK_ID, videoSource)
-                _localStream?.addTrack(_localVideoTrack)
+                val localVideoTrack = _factory!!.createVideoTrack(VIDEO_TRACK_ID, videoSource)
+                _localStream?.addTrack(localVideoTrack)
             }
         }
     }
@@ -498,17 +468,15 @@ class WebRtcEngine : IEngine, IPeerEvent {
      *
      * @return VideoCapturer
      */
-    private fun createVideoCapture(): VideoCapturer? {
-        val videoCapturer: VideoCapturer?
+    private fun createVideoCapturer(): VideoCapturer? {
         if (screencaptureEnabled) {
             return createScreenCapturer()
         }
-        videoCapturer = if (Camera2Enumerator.isSupported(mContext)) {
+        return if (Camera2Enumerator.isSupported(mContext)) {
             createCameraCapture(Camera2Enumerator(mContext))
         } else {
             createCameraCapture(Camera1Enumerator(true))
         }
-        return videoCapturer
     }
 
     /**
@@ -555,14 +523,9 @@ class WebRtcEngine : IEngine, IPeerEvent {
             })
     }
 
-    //**************************************各种约束******************************************/
-    private val AUDIO_ECHO_CANCELLATION_CONSTRAINT = "googEchoCancellation"
-    private val AUDIO_AUTO_GAIN_CONTROL_CONSTRAINT = "googAutoGainControl"
-    private val AUDIO_HIGH_PASS_FILTER_CONSTRAINT = "googHighpassFilter"
-    private val AUDIO_NOISE_SUPPRESSION_CONSTRAINT = "googNoiseSuppression"
 
     // 配置音频参数
-    private fun createAudioConstraints(): MediaConstraints? {
+    private fun createAudioConstraints(): MediaConstraints {
         val audioConstraints = MediaConstraints()
         audioConstraints.mandatory.add(
             MediaConstraints.KeyValuePair(AUDIO_ECHO_CANCELLATION_CONSTRAINT, "true")
@@ -613,5 +576,26 @@ class WebRtcEngine : IEngine, IPeerEvent {
         Log.d(TAG, "onDisconnected mCallback != null")
         mCallback.onDisconnected(userId)
 
+    }
+
+    companion object {
+        private const val TAG = "WebRTCEngine"
+        private const val VIDEO_TRACK_ID = "ARDAMSv0"
+        private const val AUDIO_TRACK_ID = "ARDAMSa0"
+        const val VIDEO_CODEC_H264 = "H264"
+        private const val VIDEO_RESOLUTION_WIDTH = 640
+        private const val VIDEO_RESOLUTION_HEIGHT = 480
+        private const val FPS = 20
+
+        //**************************************各种约束******************************************/
+        private const val AUDIO_ECHO_CANCELLATION_CONSTRAINT = "googEchoCancellation"
+        private const val AUDIO_AUTO_GAIN_CONTROL_CONSTRAINT = "googAutoGainControl"
+        private const val AUDIO_HIGH_PASS_FILTER_CONSTRAINT = "googHighpassFilter"
+        private const val AUDIO_NOISE_SUPPRESSION_CONSTRAINT = "googNoiseSuppression"
+    }
+
+    init {
+        audioManager = mContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        initIceServer()
     }
 }

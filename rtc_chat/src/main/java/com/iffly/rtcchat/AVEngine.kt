@@ -25,7 +25,7 @@ class AVEngine private constructor(var iEngine: IEngine) : IEngine {
     }
 
     override fun disconnected(userId: String, reason: CallEndReason) {
-        iEngine.disconnected(userId!!, reason!!)
+        iEngine.disconnected(userId, reason)
     }
 
     override fun receiveOffer(userId: String, description: String) {
@@ -45,8 +45,8 @@ class AVEngine private constructor(var iEngine: IEngine) : IEngine {
         iEngine.leaveRoom(userId)
     }
 
-    override fun startPreview(isO: Boolean): View? {
-        return iEngine.startPreview(isO)
+    override fun startPreview(isOverlay: Boolean): View? {
+        return iEngine.startPreview(isOverlay)
     }
 
     override fun stopPreview() {
@@ -95,16 +95,10 @@ class AVEngine private constructor(var iEngine: IEngine) : IEngine {
 
         @Volatile
         private var instance: AVEngine? = null
-        fun createEngine(engine: IEngine): AVEngine? {
-            if (null == instance) {
-                synchronized(AVEngine::class.java) {
-                    if (null == instance) {
-                        instance = AVEngine(engine)
-                    }
-                }
+        fun createEngine(engine: IEngine): AVEngine =
+            instance ?: synchronized(AVEngine::class.java) {
+                instance ?: AVEngine(engine).apply { instance = this }
             }
-            return instance
-        }
     }
 
 

@@ -29,7 +29,7 @@ class Peer(
     list: List<IceServer>,
     userId: String,
     event: IPeerEvent
-) : SdpObserver, PeerConnection.Observer {
+) : SdpObserver, Observer {
     companion object {
         const val TAG = "dds_Peer"
     }
@@ -56,11 +56,7 @@ class Peer(
 
     fun createPeerConnection(): PeerConnection? {
         val rtcConfig = RTCConfiguration(mIceLis)
-        return if (mFactory != null) {
-            mFactory?.createPeerConnection(rtcConfig, this)
-        } else {
-            null
-        }
+        return mFactory.createPeerConnection(rtcConfig, this)
     }
 
     fun setOffer(isOffer: Boolean) {
@@ -304,7 +300,7 @@ class Peer(
         }
     }
 
-    private fun offerOrAnswerConstraint(): MediaConstraints? {
+    private fun offerOrAnswerConstraint(): MediaConstraints {
         val mediaConstraints = MediaConstraints()
         val keyValuePairs: ArrayList<MediaConstraints.KeyValuePair> = ArrayList()
         keyValuePairs.add(MediaConstraints.KeyValuePair("OfferToReceiveAudio", "true"))

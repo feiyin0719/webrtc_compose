@@ -15,7 +15,7 @@ class App : Application() {
         instance = this
 
         // 初始化信令
-        SkyEngineKit.init(VoipEvent())
+        SkyEngineKit.init(VoipEvent)
     }
 
     companion object {

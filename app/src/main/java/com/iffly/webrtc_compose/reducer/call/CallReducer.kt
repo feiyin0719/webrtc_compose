@@ -9,6 +9,7 @@ import com.iffly.rtcchat.SkyEngineKit
 import com.iffly.webrtc_compose.App
 import com.iffly.webrtc_compose.reducer.call.CallViewAction.Companion.PERMISSION_KEY
 import com.iffly.webrtc_compose.voip.VoipEvent
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -70,6 +71,7 @@ data class CallViewAction(
     }
 }
 
+@DelicateCoroutinesApi
 class CallReducer :
     Reducer<CallViewSate, CallViewAction>(CallViewSate::class.java, CallViewAction::class.java) {
     override fun reduce(state: CallViewSate, flow: Flow<CallViewAction>): Flow<CallViewSate> {
@@ -82,7 +84,7 @@ class CallReducer :
                     val userId = action.map[CallViewAction.USER_KEY] as String
 
                     val surfaceView: View? =
-                        SkyEngineKit.Instance().currentSession?.setupRemoteVideo(userId, false)
+                        SkyEngineKit.instance().currentSession?.setupRemoteVideo(userId, false)
                     if (surfaceView != null) {
                         state.copy(
                             remoteSurfaceView = surfaceView as SurfaceView,
@@ -96,7 +98,7 @@ class CallReducer :
                 CallViewAction.CallViewActionValue.CreateLocal -> {
 
                     val surfaceView: View? =
-                        SkyEngineKit.Instance().currentSession?.setupLocalVideo(true)
+                        SkyEngineKit.instance().currentSession?.setupLocalVideo(true)
                     if (surfaceView != null && surfaceView is SurfaceView) {
                         surfaceView.setZOrderMediaOverlay(true)
                         state.copy(localSurfaceView = surfaceView)
@@ -105,14 +107,14 @@ class CallReducer :
                     }
                 }
                 CallViewAction.CallViewActionValue.Accept -> {
-                    val session = SkyEngineKit.Instance().currentSession
+                    val session = SkyEngineKit.instance().currentSession
                     if (session != null && session.state == CallState.Incoming) {
                         session.joinHome(session.roomId)
                     }
                     state.copy()
                 }
                 CallViewAction.CallViewActionValue.Hang -> {
-                    SkyEngineKit.Instance().endCall()
+                    SkyEngineKit.instance().endCall()
                     state.copyCloseState()
                 }
                 CallViewAction.CallViewActionValue.ChangeState -> {
@@ -131,7 +133,7 @@ class CallReducer :
                     state.copyCloseState()
                 }
                 CallViewAction.CallViewActionValue.ChangeAudio -> {
-                    SkyEngineKit.Instance().currentSession?.switchToAudio()
+                    SkyEngineKit.instance().currentSession?.switchToAudio()
                     state.copy()
                 }
                 CallViewAction.CallViewActionValue.ChangeMode -> {
@@ -142,7 +144,7 @@ class CallReducer :
                     )
                 }
                 CallViewAction.CallViewActionValue.SwitchCamera -> {
-                    SkyEngineKit.Instance().currentSession?.switchCamera()
+                    SkyEngineKit.instance().currentSession?.switchCamera()
                     state.copy()
                 }
                 CallViewAction.CallViewActionValue.ChangePermission -> {
@@ -150,7 +152,7 @@ class CallReducer :
                     if (havePermission)
                         state.copy(havePermission = true)
                     else {
-                        SkyEngineKit.Instance().sendRefuseOnPermissionDenied(
+                        SkyEngineKit.instance().sendRefuseOnPermissionDenied(
                             App.instance!!.roomId,
                             App.instance!!.otherUserId
                         )
@@ -159,14 +161,14 @@ class CallReducer :
                 }
                 CallViewAction.CallViewActionValue.ToggleMute -> {
                     var isMute = state.isMute
-                    if (SkyEngineKit.Instance().currentSession?.toggleMuteAudio(!isMute) == true) {
+                    if (SkyEngineKit.instance().currentSession?.toggleMuteAudio(!isMute) == true) {
                         isMute = !isMute
                     }
                     state.copy(isMute = isMute)
                 }
                 CallViewAction.CallViewActionValue.ToggleSpeaker -> {
                     var isSpeaker = state.isSpeaker
-                    if (SkyEngineKit.Instance().currentSession?.toggleSpeaker(!isSpeaker) == true) {
+                    if (SkyEngineKit.instance().currentSession?.toggleSpeaker(!isSpeaker) == true) {
                         isSpeaker = !isSpeaker
                     }
                     state.copy(isSpeaker = isSpeaker)
@@ -181,8 +183,9 @@ class CallReducer :
     private fun initCall(state: CallViewSate, map: Map<String, Any>): CallViewSate {
 
         val outGoing: Boolean = map[CallViewAction.OUTGOING_KEY] as Boolean
+        SkyEngineKit.init(VoipEvent)
         if (!outGoing) {
-            val b = SkyEngineKit.Instance().startInCall(
+            val b = SkyEngineKit.instance().startInCall(
                 App.instance!!,
                 App.instance!!.roomId, App.instance!!.otherUserId, state.audioOnly
             )
@@ -190,10 +193,10 @@ class CallReducer :
             if (!b) {
                 return state.copyCloseState()
             } else {
-                val session = SkyEngineKit.Instance().currentSession
+                val session = SkyEngineKit.instance().currentSession
                 if (session != null) {
                     val surfaceView: View? =
-                        SkyEngineKit.Instance().currentSession?.setupLocalVideo(false)
+                        SkyEngineKit.instance().currentSession?.setupLocalVideo(false)
 
                     if (surfaceView != null && surfaceView is SurfaceView) {
                         surfaceView.setZOrderMediaOverlay(true)
@@ -212,17 +215,16 @@ class CallReducer :
         } else {
             val userId = map[CallViewAction.USER_KEY] as String
 
-            SkyEngineKit.init(VoipEvent())
             val room = UUID.randomUUID().toString() + System.currentTimeMillis()
             val b: Boolean =
-                SkyEngineKit.Instance().startOutCall(App.instance!!, room, userId, false)
+                SkyEngineKit.instance().startOutCall(App.instance!!, room, userId, false)
             if (!b) {
                 return state.copyCloseState()
             } else {
 
                 App.instance?.roomId = room
                 App.instance?.otherUserId = userId
-                val session: CallSession? = SkyEngineKit.Instance().currentSession
+                val session: CallSession? = SkyEngineKit.instance().currentSession
                 return if (session == null) {
                     state.copyCloseState()
                 } else {
