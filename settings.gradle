@@ -2,4 +2,3 @@
 rootProject.name = "webrtc_compose"
 include ':app'
 include ':rtc_chat'
-include ':redux'

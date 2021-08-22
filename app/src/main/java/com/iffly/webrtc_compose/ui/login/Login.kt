@@ -2,7 +2,7 @@ package com.iffly.webrtc_compose.ui.login
 
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import com.iffly.compose.redux.storeViewModel
+import com.iffly.compose.libredux.storeViewModel
 import com.iffly.webrtc_compose.reducer.app.LoginAction
 import com.iffly.webrtc_compose.reducer.app.LoginState
 import com.iffly.webrtc_compose.reducer.app.LoginStateEnum

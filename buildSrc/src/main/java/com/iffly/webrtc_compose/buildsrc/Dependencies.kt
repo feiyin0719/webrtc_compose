@@ -5,7 +5,7 @@ object Versions {
 }
 
 object Libs {
-    const val androidGradlePlugin = "com.android.tools.build:gradle:7.0.0"
+    const val androidGradlePlugin = "com.android.tools.build:gradle:7.0.1"
 
     object Retrofit {
         const val version = "2.9.0"
@@ -63,6 +63,7 @@ object Libs {
             const val viewModelCompose =
                 "androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07"
         }
+
         object LiveData {
             const val version = "2.3.1"
             const val liveDataKtx = "androidx.lifecycle:lifecycle-livedata-ktx:$version"
@@ -123,5 +124,10 @@ object Libs {
     object FastJson {
         const val version = "1.2.23"
         const val fastJson = "com.alibaba:fastjson:$version"
+    }
+
+    object Redux {
+        const val version = "0.0.3"
+        const val redux = "com.iffly:redux:$version"
     }
 }

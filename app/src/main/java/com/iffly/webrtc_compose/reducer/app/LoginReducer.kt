@@ -1,6 +1,7 @@
 package com.iffly.webrtc_compose.reducer.app
 
-import com.iffly.compose.redux.Reducer
+
+import com.iffly.compose.libredux.Reducer
 import com.iffly.webrtc_compose.App
 import com.iffly.webrtc_compose.data.repo.net.ServiceCreator
 import com.iffly.webrtc_compose.socket.SocketManager
