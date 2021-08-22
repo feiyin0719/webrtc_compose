@@ -95,6 +95,7 @@ dependencies {
     implementation Libs.AndroidX.Compose.iconsExtended
     implementation Libs.AndroidX.Compose.tooling
     implementation Libs.AndroidX.Compose.liveData
+    implementation Libs.AndroidX.LiveData.liveDataKtx
 
     implementation Libs.Accompanist.insets
     implementation Libs.Accompanist.systemuicontroller
@@ -110,7 +111,8 @@ dependencies {
     implementation Libs.Material.material
 
     implementation project(path: ':rtc_chat')
-    implementation project(path: ':redux')
+
+    implementation Libs.Redux.redux
 
     androidTestImplementation Libs.JUnit.junit
     androidTestImplementation Libs.AndroidX.Test.runner

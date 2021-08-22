@@ -1,6 +1,6 @@
 package com.iffly.webrtc_compose.reducer.home
 
-import com.iffly.compose.redux.Reducer
+import com.iffly.compose.libredux.Reducer
 import com.iffly.webrtc_compose.data.bean.ChatRoomItem
 import com.iffly.webrtc_compose.data.repo.net.UserRepo
 import kotlinx.coroutines.delay

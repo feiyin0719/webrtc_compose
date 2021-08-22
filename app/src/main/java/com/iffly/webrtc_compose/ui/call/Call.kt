@@ -12,8 +12,8 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import com.iffly.compose.redux.StoreViewModel
-import com.iffly.compose.redux.storeViewModel
+import com.iffly.compose.libredux.StoreViewModel
+import com.iffly.compose.libredux.storeViewModel
 import com.iffly.rtcchat.CallEndReason
 import com.iffly.rtcchat.CallSessionCallback
 import com.iffly.rtcchat.CallState

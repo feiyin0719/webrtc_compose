@@ -3,8 +3,8 @@ package com.iffly.webrtc_compose.ui.home
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalContext
-import com.iffly.compose.redux.StoreViewModel
-import com.iffly.compose.redux.storeViewModel
+import com.iffly.compose.libredux.StoreViewModel
+import com.iffly.compose.libredux.storeViewModel
 import com.iffly.webrtc_compose.CallActivity
 import com.iffly.webrtc_compose.reducer.home.UserViewAction
 import com.iffly.webrtc_compose.reducer.home.UserViewState

@@ -2,7 +2,7 @@ package com.iffly.webrtc_compose.reducer.call
 
 import android.view.SurfaceView
 import android.view.View
-import com.iffly.compose.redux.Reducer
+import com.iffly.compose.libredux.Reducer
 import com.iffly.rtcchat.CallSession
 import com.iffly.rtcchat.CallState
 import com.iffly.rtcchat.SkyEngineKit

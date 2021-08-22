@@ -6,7 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.insets.ProvideWindowInsets
-import com.iffly.compose.redux.storeViewModel
+import com.iffly.compose.libredux.storeViewModel
 import com.iffly.webrtc_compose.reducer.app.LoginAction
 import com.iffly.webrtc_compose.reducer.app.LoginReducer
 import com.iffly.webrtc_compose.reducer.home.ChatRoomReducer
