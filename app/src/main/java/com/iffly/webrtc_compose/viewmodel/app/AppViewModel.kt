@@ -28,21 +28,23 @@ class AppViewModel : BaseMVIViewModel<AppViewModel.LoginState, AppViewModel.Logi
         val userName: String = ""
     )
 
-    override fun reduce(action: LoginAction): LoginState {
+    override suspend fun reduce(action: LoginAction, state: LoginState): LoginState {
         return if (action.action == LoginAction.LoginActionValue.Login) {
             App.instance?.username = action.data
             SocketManager.connect(ServiceCreator.WS, action.data, 0)
-            LoginState(LoginStateEnum.Logining, action.data)
+            state.copy(state = LoginStateEnum.Logining, userName = action.data)
         } else if (action.action == LoginAction.LoginActionValue.Logout) {
             App.instance?.username = ""
-            LoginState(LoginStateEnum.Logout, action.data)
+            state.copy(state = LoginStateEnum.Logout, userName = "")
         } else {
             if (action.data == "login")
-                LoginState(LoginStateEnum.Login, viewState.value?.userName ?: "")
+                state.copy(state = LoginStateEnum.Login, userName = action.data)
             else
-                LoginState(LoginStateEnum.Logout, "")
+                state.copy(state = LoginStateEnum.Logout, userName = "")
         }
     }
+
+    override fun initState() = LoginState()
 }
 
 @Composable

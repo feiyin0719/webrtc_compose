@@ -17,10 +17,12 @@ abstract class BaseMVIViewModel<S, A> : ViewModel() {
 
     private fun handleAction() =
         _userIntent.receiveAsFlow().map {
-            reduce(it)
+            reduce(it, viewState.value ?: initState())
         }.shareIn(viewModelScope, SharingStarted.Lazily, 1)
 
-    abstract fun reduce(action: A): S
+    abstract suspend fun reduce(action: A, state: S): S
+
+    abstract fun initState(): S
 
     fun sendAction(action: A, coroutineScope: CoroutineScope) {
         coroutineScope.launch {

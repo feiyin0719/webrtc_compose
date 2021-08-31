@@ -3,18 +3,18 @@ package com.iffly.webrtc_compose.ui.home
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalContext
-import com.iffly.compose.libredux.StoreViewModel
-import com.iffly.compose.libredux.storeViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.iffly.webrtc_compose.CallActivity
-import com.iffly.webrtc_compose.viewmodel.home.UserViewAction
-import com.iffly.webrtc_compose.viewmodel.home.UserViewState
+import com.iffly.webrtc_compose.viewmodel.home.UserViewModel
+import com.iffly.webrtc_compose.viewmodel.home.UserViewModel.UserViewAction
+import com.iffly.webrtc_compose.viewmodel.home.UserViewModel.UserViewState
 
 @Composable
 fun UserScreen() {
-    val store = storeViewModel()
+    val userViewModel: UserViewModel = viewModel()
 
     val userViewState: UserViewState
-            by store.getState(UserViewState::class.java).observeAsState(
+            by userViewModel.viewState.observeAsState(
                 UserViewState()
             )
     var init by remember {
@@ -23,25 +23,28 @@ fun UserScreen() {
     LaunchedEffect(init) {
         if (init) {
             init = false
-            refresh(store)
+            refresh(userViewModel = userViewModel)
         }
     }
     val context = LocalContext.current
-    UserList(userViewState.list, userViewState.loading, { refresh(store) }) {
+    UserList(
+        userViewState.list,
+        userViewState.loading,
+        { refresh(userViewModel = userViewModel) }) {
         CallActivity.startCallActivity(it, true, context = context)
     }
 
 
 }
 
-private fun refresh(store: StoreViewModel) {
-    store.dispatch(
+private fun refresh(userViewModel: UserViewModel) {
+    userViewModel.sendAction(
         UserViewAction(
             UserViewAction.UserViewActionValue.ChangeLoading,
             ""
         )
     )
-    store.dispatch(
+    userViewModel.sendAction(
         UserViewAction(
             UserViewAction.UserViewActionValue.Refresh,
             ""

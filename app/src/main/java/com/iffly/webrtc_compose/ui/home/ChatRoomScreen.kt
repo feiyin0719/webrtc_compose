@@ -2,35 +2,39 @@ package com.iffly.webrtc_compose.ui.home
 
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import com.iffly.compose.libredux.StoreViewModel
-import com.iffly.compose.libredux.storeViewModel
-import com.iffly.webrtc_compose.viewmodel.home.ChatRoomAction
-import com.iffly.webrtc_compose.viewmodel.home.ChatRoomViewState
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.iffly.webrtc_compose.viewmodel.home.ChatRoomViewModel
+import com.iffly.webrtc_compose.viewmodel.home.ChatRoomViewModel.ChatRoomAction
+import com.iffly.webrtc_compose.viewmodel.home.ChatRoomViewModel.ChatRoomViewState
 
 
 @Composable
 fun ChatRoomScreen() {
-    val store = storeViewModel()
-    val viewState by store.getState(ChatRoomViewState::class.java)
-        .observeAsState(initial = ChatRoomViewState())
+    val chatRoomViewModel: ChatRoomViewModel = viewModel()
+    val viewState by chatRoomViewModel.viewState.observeAsState(initial = ChatRoomViewState())
     var init by remember {
         mutableStateOf(true)
     }
     LaunchedEffect(init) {
         if (init) {
             init = false
-            refresh(store)
+            refresh(chatRoomViewModel = chatRoomViewModel)
         }
     }
 
-    ChatList(list = viewState.list, isLoading = viewState.loading,refreshListener = {
-        refresh(store)
+    ChatList(list = viewState.list, isLoading = viewState.loading, refreshListener = {
+        refresh(chatRoomViewModel = chatRoomViewModel)
     }) {
 
     }
 }
 
-private fun refresh(store: StoreViewModel) {
-    store.dispatch(ChatRoomAction(ChatRoomAction.ChatRoomActionValue.ChangeLoading, ""))
-    store.dispatch(ChatRoomAction(ChatRoomAction.ChatRoomActionValue.Refresh, ""))
+private fun refresh(chatRoomViewModel: ChatRoomViewModel) {
+    chatRoomViewModel.sendAction(
+        ChatRoomAction(
+            ChatRoomAction.ChatRoomActionValue.ChangeLoading,
+            ""
+        )
+    )
+    chatRoomViewModel.sendAction(ChatRoomAction(ChatRoomAction.ChatRoomActionValue.Refresh, ""))
 }
