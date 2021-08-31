@@ -10,7 +10,7 @@ import androidx.activity.compose.setContent
 import androidx.core.view.WindowCompat
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.iffly.compose.libredux.storeViewModel
-import com.iffly.webrtc_compose.reducer.call.CallReducer
+import com.iffly.webrtc_compose.viewmodel.call.CallReducer
 import com.iffly.webrtc_compose.ui.call.CallScreen
 import com.iffly.webrtc_compose.ui.theme.WebrtcTheme
 

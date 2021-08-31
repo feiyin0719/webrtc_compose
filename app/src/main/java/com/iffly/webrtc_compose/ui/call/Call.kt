@@ -18,9 +18,9 @@ import com.iffly.rtcchat.CallEndReason
 import com.iffly.rtcchat.CallSessionCallback
 import com.iffly.rtcchat.CallState
 import com.iffly.rtcchat.SkyEngineKit
-import com.iffly.webrtc_compose.reducer.call.CallViewAction
-import com.iffly.webrtc_compose.reducer.call.CallViewAction.Companion.PERMISSION_KEY
-import com.iffly.webrtc_compose.reducer.call.CallViewSate
+import com.iffly.webrtc_compose.viewmodel.call.CallViewAction
+import com.iffly.webrtc_compose.viewmodel.call.CallViewAction.Companion.PERMISSION_KEY
+import com.iffly.webrtc_compose.viewmodel.call.CallViewSate
 import com.iffly.webrtc_compose.ui.theme.Typography
 
 @Composable

@@ -1,4 +1,4 @@
-package com.iffly.webrtc_compose.reducer.call
+package com.iffly.webrtc_compose.viewmodel.call
 
 import android.view.SurfaceView
 import android.view.View
@@ -7,7 +7,7 @@ import com.iffly.rtcchat.CallSession
 import com.iffly.rtcchat.CallState
 import com.iffly.rtcchat.SkyEngineKit
 import com.iffly.webrtc_compose.App
-import com.iffly.webrtc_compose.reducer.call.CallViewAction.Companion.PERMISSION_KEY
+import com.iffly.webrtc_compose.viewmodel.call.CallViewAction.Companion.PERMISSION_KEY
 import com.iffly.webrtc_compose.voip.VoipEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

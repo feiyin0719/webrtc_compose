@@ -45,7 +45,8 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".voip.VoipReceiver">
+        <receiver android:name=".voip.VoipReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="${applicationId}.voip.Receiver" />
             </intent-filter>

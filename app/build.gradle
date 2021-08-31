@@ -15,6 +15,7 @@
  */
 
 import com.iffly.webrtc_compose.Libs
+import com.iffly.webrtc_compose.Versions
 
 plugins {
     id 'com.android.application'
@@ -23,12 +24,12 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion Versions.targetVersion
 
     defaultConfig {
         applicationId 'com.iffly.webrtc'
-        minSdkVersion 21
-        targetSdkVersion 30
+        minSdkVersion Versions.minVersion
+        targetSdkVersion Versions.targetVersion
         versionCode 1
         versionName '1.0'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'

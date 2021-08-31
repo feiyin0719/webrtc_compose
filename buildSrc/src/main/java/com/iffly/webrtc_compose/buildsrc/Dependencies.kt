@@ -2,6 +2,10 @@ package com.iffly.webrtc_compose
 
 object Versions {
     const val ktlint = "0.41.0"
+    const val targetVersion = 31
+    const val minVersion = 21
+    const val jvmTarget = "1.8"
+    const val buildToolVersion = "31.0.0"
 }
 
 object Libs {

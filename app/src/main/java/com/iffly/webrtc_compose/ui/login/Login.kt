@@ -2,25 +2,23 @@ package com.iffly.webrtc_compose.ui.login
 
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import com.iffly.compose.libredux.storeViewModel
-import com.iffly.webrtc_compose.reducer.app.LoginAction
-import com.iffly.webrtc_compose.reducer.app.LoginState
-import com.iffly.webrtc_compose.reducer.app.LoginStateEnum
 import com.iffly.webrtc_compose.ui.LocalNavController
 import com.iffly.webrtc_compose.ui.MainDestinations
+import com.iffly.webrtc_compose.viewmodel.app.AppViewModel
+import com.iffly.webrtc_compose.viewmodel.app.LoginStateEnum
+import com.iffly.webrtc_compose.viewmodel.app.appViewModel
 
 const val LOGIN_ROUTE = "login/login"
 
 
 @Composable
 fun LoginScreen() {
-    val store = storeViewModel()
+    val appViewModel = appViewModel()
     var name by remember {
         mutableStateOf("")
     }
     val loginState
-            by store.getState(LoginState::class.java)
-                .observeAsState(LoginState())
+            by appViewModel.viewState.observeAsState(AppViewModel.LoginState())
     if (loginState.state == LoginStateEnum.Login) {
         val navController = LocalNavController.current
         LaunchedEffect(key1 = loginState.state, block = {
@@ -36,7 +34,12 @@ fun LoginScreen() {
             name = name,
             onNameChanged = { name = it }
         ) {
-            store.dispatch(LoginAction(LoginAction.LoginActionValue.Login, name))
+            appViewModel.sendAction(
+                AppViewModel.LoginAction(
+                    AppViewModel.LoginAction.LoginActionValue.Login,
+                    name
+                )
+            )
         }
     }
 }

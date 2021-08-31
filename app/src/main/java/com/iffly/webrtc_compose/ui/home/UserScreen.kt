@@ -6,8 +6,8 @@ import androidx.compose.ui.platform.LocalContext
 import com.iffly.compose.libredux.StoreViewModel
 import com.iffly.compose.libredux.storeViewModel
 import com.iffly.webrtc_compose.CallActivity
-import com.iffly.webrtc_compose.reducer.home.UserViewAction
-import com.iffly.webrtc_compose.reducer.home.UserViewState
+import com.iffly.webrtc_compose.viewmodel.home.UserViewAction
+import com.iffly.webrtc_compose.viewmodel.home.UserViewState
 
 @Composable
 fun UserScreen() {

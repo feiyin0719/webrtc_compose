@@ -6,22 +6,19 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.insets.ProvideWindowInsets
-import com.iffly.compose.libredux.storeViewModel
-import com.iffly.webrtc_compose.reducer.app.LoginAction
-import com.iffly.webrtc_compose.reducer.app.LoginReducer
-import com.iffly.webrtc_compose.reducer.home.ChatRoomReducer
-import com.iffly.webrtc_compose.reducer.home.UserReducer
 import com.iffly.webrtc_compose.socket.IUserState
 import com.iffly.webrtc_compose.socket.SocketManager
 import com.iffly.webrtc_compose.ui.components.AppScaffold
 import com.iffly.webrtc_compose.ui.components.BottomBar
 import com.iffly.webrtc_compose.ui.home.HomeSections
 import com.iffly.webrtc_compose.ui.theme.WebrtcTheme
+import com.iffly.webrtc_compose.viewmodel.app.AppViewModel
+import com.iffly.webrtc_compose.viewmodel.app.appViewModel
 
 @Composable
 fun WebrtcApp() {
 
-    val store = storeViewModel(listOf(LoginReducer(), UserReducer(), ChatRoomReducer()))
+    val appViewModel = appViewModel()
     ProvideWindowInsets {
         WebrtcTheme {
             val tabs = remember { HomeSections.values.toTypedArray() }
@@ -30,18 +27,18 @@ fun WebrtcApp() {
                 val userStateCallback = remember {
                     object : IUserState {
                         override fun userLogin() {
-                            store.dispatch(
-                                LoginAction(
-                                    LoginAction.LoginActionValue.ChangeState,
+                            appViewModel.sendAction(
+                                AppViewModel.LoginAction(
+                                    AppViewModel.LoginAction.LoginActionValue.ChangeState,
                                     "login"
                                 )
                             )
                         }
 
                         override fun userLogout() {
-                            store.dispatch(
-                                LoginAction(
-                                    LoginAction.LoginActionValue.ChangeState,
+                            appViewModel.sendAction(
+                                AppViewModel.LoginAction(
+                                    AppViewModel.LoginAction.LoginActionValue.ChangeState,
                                     "logout"
                                 )
                             )

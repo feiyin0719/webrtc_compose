@@ -1,4 +1,4 @@
-package com.iffly.webrtc_compose.reducer.home
+package com.iffly.webrtc_compose.viewmodel.home
 
 import com.iffly.compose.libredux.Reducer
 import com.iffly.webrtc_compose.data.bean.ChatRoomItem

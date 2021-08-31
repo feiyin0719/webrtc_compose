@@ -1,4 +1,5 @@
 import com.iffly.webrtc_compose.Libs
+import com.iffly.webrtc_compose.Versions
 
 plugins {
     id 'com.android.library'
@@ -6,12 +7,12 @@ plugins {
 }
 
 android {
-    compileSdk 31
-    buildToolsVersion "31.0.0"
+    compileSdk Versions.targetVersion
+    buildToolsVersion Versions.buildToolVersion
 
     defaultConfig {
-        minSdk 21
-        targetSdk 31
+        minSdk Versions.minVersion
+        targetSdk Versions.targetVersion
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -28,7 +29,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = Versions.jvmTarget
     }
 }
 

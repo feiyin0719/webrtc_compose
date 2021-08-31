@@ -4,8 +4,8 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import com.iffly.compose.libredux.StoreViewModel
 import com.iffly.compose.libredux.storeViewModel
-import com.iffly.webrtc_compose.reducer.home.ChatRoomAction
-import com.iffly.webrtc_compose.reducer.home.ChatRoomViewState
+import com.iffly.webrtc_compose.viewmodel.home.ChatRoomAction
+import com.iffly.webrtc_compose.viewmodel.home.ChatRoomViewState
 
 
 @Composable
