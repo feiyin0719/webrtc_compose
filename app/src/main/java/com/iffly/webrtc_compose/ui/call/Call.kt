@@ -12,27 +12,27 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import com.iffly.compose.libredux.StoreViewModel
-import com.iffly.compose.libredux.storeViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.iffly.rtcchat.CallEndReason
 import com.iffly.rtcchat.CallSessionCallback
 import com.iffly.rtcchat.CallState
 import com.iffly.rtcchat.SkyEngineKit
-import com.iffly.webrtc_compose.viewmodel.call.CallViewAction
-import com.iffly.webrtc_compose.viewmodel.call.CallViewAction.Companion.PERMISSION_KEY
-import com.iffly.webrtc_compose.viewmodel.call.CallViewSate
 import com.iffly.webrtc_compose.ui.theme.Typography
+import com.iffly.webrtc_compose.viewmodel.call.CallViewModel
+import com.iffly.webrtc_compose.viewmodel.call.CallViewModel.CallViewAction
+import com.iffly.webrtc_compose.viewmodel.call.CallViewModel.CallViewAction.Companion.PERMISSION_KEY
+import com.iffly.webrtc_compose.viewmodel.call.CallViewModel.CallViewSate
 
 @Composable
 fun CallScreen(outGoing: Boolean = false, userId: String = "") {
-    val store = storeViewModel()
+    val callViewModel: CallViewModel = viewModel()
     var init by remember {
         mutableStateOf(true)
     }
     val activity = LocalContext.current
     val requestPermission =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestMultiplePermissions()) { map ->
-            handlePermissionResult(store = store, map = map)
+            handlePermissionResult(callViewModel = callViewModel, map = map)
         }
     LaunchedEffect(key1 = init) {
         if (init) {
@@ -47,13 +47,13 @@ fun CallScreen(outGoing: Boolean = false, userId: String = "") {
         }
     }
     val callViewSate by
-    store.getState(CallViewSate::class.java)
+    callViewModel.viewState
         .observeAsState(
             CallViewSate()
         )
     LaunchedEffect(key1 = callViewSate.havePermission) {
         if (callViewSate.havePermission) {
-            store.dispatch(
+            callViewModel.sendAction(
                 CallViewAction(
                     CallViewAction.CallViewActionValue.InitCall,
                     mapOf(
@@ -67,14 +67,14 @@ fun CallScreen(outGoing: Boolean = false, userId: String = "") {
     val close = callViewSate.closeState
     if (close) {
         LaunchedEffect(close) {
-            if (close && activity is Activity){
+            if (close && activity is Activity) {
                 SkyEngineKit.instance().endCall()
                 activity.finish()
             }
         }
     } else {
         if (callViewSate.havePermission) {
-            CallScreenWithPermission(callViewSate = callViewSate, store = store)
+            CallScreenWithPermission(callViewSate = callViewSate, callViewModel = callViewModel)
         } else {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
@@ -87,9 +87,9 @@ fun CallScreen(outGoing: Boolean = false, userId: String = "") {
 }
 
 @Composable
-fun CallScreenWithPermission(callViewSate: CallViewSate, store: StoreViewModel) {
+fun CallScreenWithPermission(callViewSate: CallViewSate, callViewModel: CallViewModel) {
     val callSessionCallback = remember {
-        StoreCallSessionCallback(store = store)
+        StoreCallSessionCallback(callViewModel = callViewModel)
     }
 
     val surfaceView = callViewSate.remoteSurfaceView
@@ -110,7 +110,7 @@ fun CallScreenWithPermission(callViewSate: CallViewSate, store: StoreViewModel) 
         callViewSate.outGoingState,
         callState = callState,
         {
-            store.dispatch(
+            callViewModel.sendAction(
                 CallViewAction(
                     CallViewAction.CallViewActionValue.Accept,
                     mapOf()
@@ -118,7 +118,7 @@ fun CallScreenWithPermission(callViewSate: CallViewSate, store: StoreViewModel) 
             )
         },
         {
-            store.dispatch(
+            callViewModel.sendAction(
                 CallViewAction(
                     CallViewAction.CallViewActionValue.Hang,
                     mapOf()
@@ -126,7 +126,7 @@ fun CallScreenWithPermission(callViewSate: CallViewSate, store: StoreViewModel) 
             )
         },
         {
-            store.dispatch(
+            callViewModel.sendAction(
                 CallViewAction(
                     CallViewAction.CallViewActionValue.ChangeAudio,
                     mapOf()
@@ -135,7 +135,7 @@ fun CallScreenWithPermission(callViewSate: CallViewSate, store: StoreViewModel) 
         },
         isAudioOnly = callViewSate.audioOnly,
         {
-            store.dispatch(
+            callViewModel.sendAction(
                 CallViewAction(
                     CallViewAction.CallViewActionValue.SwitchCamera,
                     mapOf()
@@ -144,7 +144,7 @@ fun CallScreenWithPermission(callViewSate: CallViewSate, store: StoreViewModel) 
         },
         isMute = callViewSate.isMute,
         {
-            store.dispatch(
+            callViewModel.sendAction(
                 CallViewAction(
                     CallViewAction.CallViewActionValue.ToggleMute,
                     mapOf()
@@ -153,7 +153,7 @@ fun CallScreenWithPermission(callViewSate: CallViewSate, store: StoreViewModel) 
         },
         isSpeaker = callViewSate.isSpeaker,
         {
-            store.dispatch(
+            callViewModel.sendAction(
                 CallViewAction(
                     CallViewAction.CallViewActionValue.ToggleSpeaker,
                     mapOf()
@@ -163,7 +163,7 @@ fun CallScreenWithPermission(callViewSate: CallViewSate, store: StoreViewModel) 
     )
 }
 
-private fun handlePermissionResult(store: StoreViewModel, map: MutableMap<String, Boolean>) {
+private fun handlePermissionResult(callViewModel: CallViewModel, map: MutableMap<String, Boolean>) {
     var isAllGranted = true
     map.forEach { (t, u) ->
         if (!u) {
@@ -171,7 +171,7 @@ private fun handlePermissionResult(store: StoreViewModel, map: MutableMap<String
             return@forEach
         }
     }
-    store.dispatch(
+    callViewModel.sendAction(
         CallViewAction(
             CallViewAction.CallViewActionValue.ChangePermission,
             mapOf(PERMISSION_KEY to isAllGranted)
@@ -181,10 +181,10 @@ private fun handlePermissionResult(store: StoreViewModel, map: MutableMap<String
 }
 
 
-private class StoreCallSessionCallback(val store: StoreViewModel) : CallSessionCallback {
+private class StoreCallSessionCallback(val callViewModel: CallViewModel) : CallSessionCallback {
 
     override fun didCallEndWithReason(var1: CallEndReason) {
-        store.dispatch(
+        callViewModel.sendAction(
             CallViewAction(
                 CallViewAction.CallViewActionValue.EndCall,
                 mapOf(
@@ -195,7 +195,7 @@ private class StoreCallSessionCallback(val store: StoreViewModel) : CallSessionC
     }
 
     override fun didChangeState(var1: CallState) {
-        store.dispatch(
+        callViewModel.sendAction(
             CallViewAction(
                 CallViewAction.CallViewActionValue.ChangeState,
                 mapOf(
@@ -206,7 +206,7 @@ private class StoreCallSessionCallback(val store: StoreViewModel) : CallSessionC
     }
 
     override fun didChangeMode(isAudioOnly: Boolean) {
-        store.dispatch(
+        callViewModel.sendAction(
             CallViewAction(
                 CallViewAction.CallViewActionValue.ChangeMode,
                 mapOf(
@@ -217,7 +217,7 @@ private class StoreCallSessionCallback(val store: StoreViewModel) : CallSessionC
     }
 
     override fun didCreateLocalVideoTrack() {
-        store.dispatch(
+        callViewModel.sendAction(
             CallViewAction(
                 CallViewAction.CallViewActionValue.CreateLocal,
                 mapOf(
@@ -228,7 +228,7 @@ private class StoreCallSessionCallback(val store: StoreViewModel) : CallSessionC
     }
 
     override fun didReceiveRemoteVideoTrack(userId: String) {
-        store.dispatch(
+        callViewModel.sendAction(
             CallViewAction(
                 CallViewAction.CallViewActionValue.CreateRemote,
                 mapOf(
@@ -239,7 +239,7 @@ private class StoreCallSessionCallback(val store: StoreViewModel) : CallSessionC
     }
 
     override fun didUserLeave(userId: String) {
-        store.dispatch(
+        callViewModel.sendAction(
             CallViewAction(
                 CallViewAction.CallViewActionValue.UserLeave,
                 mapOf(
@@ -250,7 +250,7 @@ private class StoreCallSessionCallback(val store: StoreViewModel) : CallSessionC
     }
 
     override fun didError(error: String) {
-        store.dispatch(
+        callViewModel.sendAction(
             CallViewAction(
                 CallViewAction.CallViewActionValue.Error,
                 mapOf(
@@ -261,7 +261,7 @@ private class StoreCallSessionCallback(val store: StoreViewModel) : CallSessionC
     }
 
     override fun didDisconnected(userId: String) {
-        store.dispatch(
+        callViewModel.sendAction(
             CallViewAction(
                 CallViewAction.CallViewActionValue.Disconnect,
                 mapOf(
