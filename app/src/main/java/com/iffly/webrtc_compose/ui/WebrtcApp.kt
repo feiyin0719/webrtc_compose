@@ -34,6 +34,12 @@ fun WebrtcApp() {
                             appState.callUserId,
                             appState.outGoing
                         )
+                        appViewModel.sendAction(
+                            AppAction(
+                                AppAction.AppActionValue.StartCallComplete,
+                                ""
+                            )
+                        )
                     }
                 }
                 val userStateCallback = remember {

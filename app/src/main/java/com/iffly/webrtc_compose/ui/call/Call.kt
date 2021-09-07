@@ -18,6 +18,8 @@ import com.iffly.rtcchat.CallSessionCallback
 import com.iffly.rtcchat.CallState
 import com.iffly.rtcchat.SkyEngineKit
 import com.iffly.webrtc_compose.ui.theme.Typography
+import com.iffly.webrtc_compose.viewmodel.app.AppViewModel
+import com.iffly.webrtc_compose.viewmodel.app.appViewModel
 import com.iffly.webrtc_compose.viewmodel.call.CallViewModel
 import com.iffly.webrtc_compose.viewmodel.call.CallViewModel.CallViewAction
 import com.iffly.webrtc_compose.viewmodel.call.CallViewModel.CallViewAction.Companion.PERMISSION_KEY
