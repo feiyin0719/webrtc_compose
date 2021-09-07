@@ -2,6 +2,9 @@ package com.iffly.webrtc_compose.ui.call
 
 import android.Manifest
 import android.app.Activity
+import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -12,6 +15,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.iffly.rtcchat.CallEndReason
 import com.iffly.rtcchat.CallSessionCallback
@@ -38,6 +42,7 @@ fun CallScreen(outGoing: Boolean = false, userId: String = "", back: (() -> Unit
         rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestMultiplePermissions()) { map ->
             handlePermissionResult(callViewModel = callViewModel, map = map)
         }
+    val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(key1 = init) {
         if (init) {
             init = false
@@ -48,6 +53,11 @@ fun CallScreen(outGoing: Boolean = false, userId: String = "", back: (() -> Unit
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
                 )
             )
+            if(activity is ComponentActivity){
+                activity.onBackPressedDispatcher.addCallback(lifecycleOwner){
+                    isEnabled = true
+                }
+            }
         }
     }
     val callViewSate by
