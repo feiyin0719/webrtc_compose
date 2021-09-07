@@ -16,24 +16,36 @@ enum class LoginStateEnum {
 }
 
 
-class AppViewModel : BaseMVIViewModel<AppViewModel.LoginState, AppViewModel.LoginAction>() {
-    data class LoginAction(val action: LoginActionValue, val data: String) {
-        enum class LoginActionValue {
-            Login, Logout, ChangeState
+class AppViewModel : BaseMVIViewModel<AppViewModel.AppState, AppViewModel.AppAction>() {
+    data class AppAction(
+        val action: AppActionValue,
+        val data: String,
+        val outGoing: Boolean = false,
+        val needStartCall: Boolean = false
+    ) {
+        enum class AppActionValue {
+            Login, Logout, ChangeState, StartCall, StartCallComplete
         }
     }
 
-    data class LoginState(
+    data class AppState(
         val state: LoginStateEnum = LoginStateEnum.Logout,
-        val userName: String = ""
+        val userName: String = "",
+        val callUserId: String = "",
+        val outGoing: Boolean = false,
+        val needStartCall: Boolean = false
     )
 
-    override suspend fun reduce(action: LoginAction, state: LoginState): LoginState {
-        return if (action.action == LoginAction.LoginActionValue.Login) {
+    override suspend fun reduce(action: AppAction, state: AppState): AppState {
+        return if (action.action == AppAction.AppActionValue.StartCall) {
+            state.copy(callUserId = action.data, outGoing = action.outGoing, needStartCall = true)
+        } else if (action.action == AppAction.AppActionValue.StartCallComplete) {
+            state.copy(needStartCall = action.needStartCall, callUserId = "", outGoing = false)
+        } else if (action.action == AppAction.AppActionValue.Login) {
             App.instance?.username = action.data
             SocketManager.connect(ServiceCreator.WS, action.data, 0)
             state.copy(state = LoginStateEnum.Logining, userName = action.data)
-        } else if (action.action == LoginAction.LoginActionValue.Logout) {
+        } else if (action.action == AppAction.AppActionValue.Logout) {
             App.instance?.username = ""
             state.copy(state = LoginStateEnum.Logout, userName = "")
         } else {
@@ -44,7 +56,7 @@ class AppViewModel : BaseMVIViewModel<AppViewModel.LoginState, AppViewModel.Logi
         }
     }
 
-    override fun initState() = LoginState()
+    override fun initState() = AppState()
 }
 
 @Composable

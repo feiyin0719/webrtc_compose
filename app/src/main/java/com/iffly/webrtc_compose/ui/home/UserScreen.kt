@@ -4,7 +4,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.iffly.webrtc_compose.CallActivity
+import com.iffly.webrtc_compose.MainActivity
 import com.iffly.webrtc_compose.viewmodel.home.UserViewModel
 import com.iffly.webrtc_compose.viewmodel.home.UserViewModel.UserViewAction
 import com.iffly.webrtc_compose.viewmodel.home.UserViewModel.UserViewState
@@ -31,7 +31,7 @@ fun UserScreen() {
         userViewState.list,
         userViewState.loading,
         { refresh(userViewModel = userViewModel) }) {
-        CallActivity.startCallActivity(it, true, context = context)
+        MainActivity.startActivity(it, true, context = context)
     }
 
 

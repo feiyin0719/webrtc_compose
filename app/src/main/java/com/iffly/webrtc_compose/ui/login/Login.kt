@@ -18,7 +18,7 @@ fun LoginScreen() {
         mutableStateOf("")
     }
     val loginState
-            by appViewModel.viewState.observeAsState(AppViewModel.LoginState())
+            by appViewModel.viewState.observeAsState(AppViewModel.AppState())
     if (loginState.state == LoginStateEnum.Login) {
         val navController = LocalNavController.current
         LaunchedEffect(key1 = loginState.state, block = {
@@ -35,8 +35,8 @@ fun LoginScreen() {
             onNameChanged = { name = it }
         ) {
             appViewModel.sendAction(
-                AppViewModel.LoginAction(
-                    AppViewModel.LoginAction.LoginActionValue.Login,
+                AppViewModel.AppAction(
+                    AppViewModel.AppAction.AppActionValue.Login,
                     name
                 )
             )

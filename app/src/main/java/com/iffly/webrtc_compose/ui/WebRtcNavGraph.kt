@@ -22,7 +22,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
+import com.iffly.webrtc_compose.ui.call.CALL_ROUTE
+import com.iffly.webrtc_compose.ui.call.CallScreen
 import com.iffly.webrtc_compose.ui.home.HomeSections
 import com.iffly.webrtc_compose.ui.home.PEOPLE_KEY
 import com.iffly.webrtc_compose.ui.home.addHomeGraph
@@ -36,6 +39,7 @@ import com.iffly.webrtc_compose.ui.login.LoginScreen
 object MainDestinations {
     const val HOME_ROUTE = "home"
     const val LOGIN_ROUTE = "login"
+    const val CALL_ROUTE = "call"
 
 }
 
@@ -63,7 +67,28 @@ fun WebRtcNavGraph(
         ) {
             addHomeGraph()
         }
+        navigation(
+            route = MainDestinations.CALL_ROUTE,
+            startDestination = CALL_ROUTE
+        ) {
+            composable(route = "$CALL_ROUTE?userId={userId}&outGoing={outGoing}",
+                arguments = listOf(
+                    navArgument("userId") { defaultValue = "" },
+                    navArgument("outGoing") { defaultValue = false }
+                )) {
+                CallScreen(
+                    it.arguments?.getBoolean("outGoing") ?: false,
+                    it.arguments?.getString("userId") ?: "",
+                ) {
+                    navController.navigateUp()
+                }
+            }
+        }
     }
+}
+
+fun startCall(navController: NavHostController, userId: String, outGoing: Boolean) {
+    navController.navigate("$CALL_ROUTE?userId=$userId&outGoing=$outGoing")
 }
 
 /**

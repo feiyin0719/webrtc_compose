@@ -23,8 +23,10 @@ import com.iffly.webrtc_compose.viewmodel.call.CallViewModel.CallViewAction
 import com.iffly.webrtc_compose.viewmodel.call.CallViewModel.CallViewAction.Companion.PERMISSION_KEY
 import com.iffly.webrtc_compose.viewmodel.call.CallViewModel.CallViewSate
 
+const val CALL_ROUTE = "call/call"
+
 @Composable
-fun CallScreen(outGoing: Boolean = false, userId: String = "") {
+fun CallScreen(outGoing: Boolean = false, userId: String = "", back: (() -> Unit)? = null) {
     val callViewModel: CallViewModel = viewModel()
     var init by remember {
         mutableStateOf(true)
@@ -69,7 +71,10 @@ fun CallScreen(outGoing: Boolean = false, userId: String = "") {
         LaunchedEffect(close) {
             if (close && activity is Activity) {
                 SkyEngineKit.instance().endCall()
-                activity.finish()
+                if (back != null) {
+                    back.invoke()
+                } else
+                    activity.finish()
             }
         }
     } else {

@@ -6,7 +6,7 @@ import android.content.Intent
 import android.media.AsyncPlayer
 import com.iffly.rtcchat.SkyEngineKit
 import com.iffly.webrtc_compose.App
-import com.iffly.webrtc_compose.CallActivity
+import com.iffly.webrtc_compose.MainActivity
 
 
 class VoipReceiver : BroadcastReceiver() {
@@ -30,7 +30,8 @@ class VoipReceiver : BroadcastReceiver() {
             App.instance?.roomId = room!!
 
             if (list.size == 1) {
-                CallActivity.startCallActivity(context = context)
+//                CallActivity.startCallActivity(context = context)
+                MainActivity.startActivity(context = context)
 
             } else {
                 // 群聊

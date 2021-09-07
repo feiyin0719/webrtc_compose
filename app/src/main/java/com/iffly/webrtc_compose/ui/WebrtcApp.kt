@@ -2,6 +2,7 @@ package com.iffly.webrtc_compose.ui
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -12,7 +13,8 @@ import com.iffly.webrtc_compose.ui.components.AppScaffold
 import com.iffly.webrtc_compose.ui.components.BottomBar
 import com.iffly.webrtc_compose.ui.home.HomeSections
 import com.iffly.webrtc_compose.ui.theme.WebrtcTheme
-import com.iffly.webrtc_compose.viewmodel.app.AppViewModel.LoginAction
+import com.iffly.webrtc_compose.viewmodel.app.AppViewModel
+import com.iffly.webrtc_compose.viewmodel.app.AppViewModel.AppAction
 import com.iffly.webrtc_compose.viewmodel.app.appViewModel
 
 @Composable
@@ -24,12 +26,22 @@ fun WebrtcApp() {
             val tabs = remember { HomeSections.values.toTypedArray() }
             val navController = rememberNavController()
             ProvideNavController(navController = navController) {
+                val appState by appViewModel.viewState.observeAsState(AppViewModel.AppState())
+                LaunchedEffect(key1 = appState.needStartCall) {
+                    if (appState.needStartCall) {
+                        startCall(
+                            navController = navController,
+                            appState.callUserId,
+                            appState.outGoing
+                        )
+                    }
+                }
                 val userStateCallback = remember {
                     object : IUserState {
                         override fun userLogin() {
                             appViewModel.sendAction(
-                                LoginAction(
-                                    LoginAction.LoginActionValue.ChangeState,
+                                AppAction(
+                                    AppAction.AppActionValue.ChangeState,
                                     "login"
                                 )
                             )
@@ -37,8 +49,8 @@ fun WebrtcApp() {
 
                         override fun userLogout() {
                             appViewModel.sendAction(
-                                LoginAction(
-                                    LoginAction.LoginActionValue.ChangeState,
+                                AppAction(
+                                    AppAction.AppActionValue.ChangeState,
                                     "logout"
                                 )
                             )
