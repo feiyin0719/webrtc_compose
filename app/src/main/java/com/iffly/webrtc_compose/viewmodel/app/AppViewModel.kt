@@ -16,7 +16,8 @@ enum class LoginStateEnum {
 }
 
 
-class AppViewModel : BaseMVIViewModel<AppViewModel.AppState, AppViewModel.AppAction>() {
+class AppViewModel :
+    BaseMVIViewModel<AppViewModel.AppState, AppViewModel.AppAction>(AppState::class.java) {
     data class AppAction(
         val action: AppActionValue,
         val data: String,
@@ -55,7 +56,6 @@ class AppViewModel : BaseMVIViewModel<AppViewModel.AppState, AppViewModel.AppAct
         }
     }
 
-    override fun initState() = AppState()
 }
 
 @Composable

@@ -7,7 +7,9 @@ import kotlinx.coroutines.delay
 
 
 class ChatRoomViewModel :
-    BaseMVIViewModel<ChatRoomViewModel.ChatRoomViewState, ChatRoomViewModel.ChatRoomAction>() {
+    BaseMVIViewModel<ChatRoomViewModel.ChatRoomViewState, ChatRoomViewModel.ChatRoomAction>(
+        ChatRoomViewState::class.java
+    ) {
     data class ChatRoomViewState(
         val loading: Boolean = true,
         val list: List<ChatRoomItem> = emptyList()
@@ -43,5 +45,4 @@ class ChatRoomViewModel :
         }
     }
 
-    override fun initState() = ChatRoomViewState()
 }

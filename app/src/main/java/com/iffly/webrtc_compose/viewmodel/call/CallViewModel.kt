@@ -11,7 +11,8 @@ import com.iffly.webrtc_compose.voip.VoipEvent
 import java.util.*
 
 
-class CallViewModel : BaseMVIViewModel<CallViewModel.CallViewSate, CallViewModel.CallViewAction>() {
+class CallViewModel :
+    BaseMVIViewModel<CallViewModel.CallViewSate, CallViewModel.CallViewAction>(CallViewSate::class.java) {
     data class CallViewSate(
         val userid: String = "",
         val closeState: Boolean = false,
@@ -170,7 +171,6 @@ class CallViewModel : BaseMVIViewModel<CallViewModel.CallViewSate, CallViewModel
         }
     }
 
-    override fun initState() = CallViewSate()
 
     private fun initCall(state: CallViewSate, map: Map<String, Any>): CallViewSate {
 

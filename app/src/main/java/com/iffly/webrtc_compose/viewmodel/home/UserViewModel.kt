@@ -7,7 +7,7 @@ import kotlinx.coroutines.delay
 
 
 class UserViewModel :
-    BaseMVIViewModel<UserViewModel.UserViewState, UserViewModel.UserViewAction>() {
+    BaseMVIViewModel<UserViewModel.UserViewState, UserViewModel.UserViewAction>(UserViewState::class.java) {
     data class UserViewState(val loading: Boolean = true, val list: List<UserItem> = emptyList())
 
     data class UserViewAction(val action: UserViewActionValue, val data: String) {
@@ -36,6 +36,4 @@ class UserViewModel :
             }
         }
     }
-
-    override fun initState() = UserViewState()
 }
