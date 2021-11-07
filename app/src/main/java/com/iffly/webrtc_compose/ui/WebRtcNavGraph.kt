@@ -88,7 +88,7 @@ fun WebRtcNavGraph(
 }
 
 fun startCall(navController: NavHostController, userId: String, outGoing: Boolean) {
-    navController.navigate("$CALL_ROUTE?userId=$userId&outGoing=$outGoing"){
+    navController.navigate("$CALL_ROUTE?userId=$userId&outGoing=$outGoing") {
         popUpTo("$CALL_ROUTE?userId=$userId&outGoing=$outGoing")
     }
 }

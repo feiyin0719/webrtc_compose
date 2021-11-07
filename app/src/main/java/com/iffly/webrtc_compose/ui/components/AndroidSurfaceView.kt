@@ -1,9 +1,5 @@
 package com.iffly.webrtc_compose.ui.components
 
-import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.ViewGroup
 import androidx.compose.runtime.Composable

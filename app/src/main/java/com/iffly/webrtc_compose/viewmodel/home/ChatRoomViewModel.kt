@@ -8,7 +8,7 @@ import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 @HiltViewModel
-class ChatRoomViewModel@Inject constructor() :
+class ChatRoomViewModel @Inject constructor() :
     BaseMVIViewModel<ChatRoomViewModel.ChatRoomViewState, ChatRoomViewModel.ChatRoomAction>(
         ChatRoomViewState::class.java
     ) {

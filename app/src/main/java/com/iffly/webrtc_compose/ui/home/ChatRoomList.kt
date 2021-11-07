@@ -81,7 +81,8 @@ fun ChatItemLayout(roomItem: ChatRoomItem) {
         Column(
             Modifier
                 .wrapContentSize()
-                .offset(20.dp, 0.dp)) {
+                .offset(20.dp, 0.dp)
+        ) {
             Text(
                 text = roomItem.roomId,
                 style = Typography.h6,

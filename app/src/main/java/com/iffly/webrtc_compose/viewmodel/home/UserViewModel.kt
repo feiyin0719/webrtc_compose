@@ -8,7 +8,7 @@ import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 @HiltViewModel
-class UserViewModel@Inject constructor() :
+class UserViewModel @Inject constructor() :
     BaseMVIViewModel<UserViewModel.UserViewState, UserViewModel.UserViewAction>(UserViewState::class.java) {
     data class UserViewState(val loading: Boolean = true, val list: List<UserItem> = emptyList())
 

@@ -2,7 +2,7 @@ package com.iffly.webrtc_compose.ui.home
 
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.iffly.webrtc_compose.viewmodel.home.ChatRoomViewModel
 import com.iffly.webrtc_compose.viewmodel.home.ChatRoomViewModel.ChatRoomAction
 import com.iffly.webrtc_compose.viewmodel.home.ChatRoomViewModel.ChatRoomViewState
@@ -10,7 +10,7 @@ import com.iffly.webrtc_compose.viewmodel.home.ChatRoomViewModel.ChatRoomViewSta
 
 @Composable
 fun ChatRoomScreen() {
-    val chatRoomViewModel: ChatRoomViewModel = viewModel()
+    val chatRoomViewModel: ChatRoomViewModel = hiltViewModel()
     val viewState by chatRoomViewModel.viewState.observeAsState(initial = ChatRoomViewState())
     var init by remember {
         mutableStateOf(true)

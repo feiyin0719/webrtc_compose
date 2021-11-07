@@ -1,6 +1,5 @@
 package com.iffly.webrtc_compose.data.repo.net
 
-import com.iffly.webrtc_compose.util.LiveDataCallAdapterFactory
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit

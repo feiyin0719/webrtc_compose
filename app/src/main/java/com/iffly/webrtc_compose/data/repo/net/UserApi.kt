@@ -7,6 +7,7 @@ import retrofit2.http.GET
 interface UserApi {
     @GET("userList")
     suspend fun getUsers(): List<UserItem>
+
     @GET("roomList")
     suspend fun getRooms(): List<ChatRoomItem>
 }

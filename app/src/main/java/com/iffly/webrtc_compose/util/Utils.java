@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
-
 import com.iffly.webrtc_compose.App;
 
 import java.util.List;

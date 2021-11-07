@@ -5,7 +5,6 @@ import androidx.compose.material.icons.outlined.Chat
 import androidx.compose.material.icons.outlined.People
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.iffly.webrtc_compose.data.bean.ChatRoomItem
 import com.iffly.webrtc_compose.ui.components.Sections
 
 val CHAT_KEY = "chats"
