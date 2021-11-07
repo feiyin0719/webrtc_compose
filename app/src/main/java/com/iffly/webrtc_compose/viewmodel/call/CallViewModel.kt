@@ -8,10 +8,12 @@ import com.iffly.rtcchat.SkyEngineKit
 import com.iffly.webrtc_compose.App
 import com.iffly.webrtc_compose.viewmodel.BaseMVIViewModel
 import com.iffly.webrtc_compose.voip.VoipEvent
+import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.*
+import javax.inject.Inject
 
-
-class CallViewModel :
+@HiltViewModel
+class CallViewModel @Inject constructor() :
     BaseMVIViewModel<CallViewModel.CallViewSate, CallViewModel.CallViewAction>(CallViewSate::class.java) {
     data class CallViewSate(
         val userid: String = "",

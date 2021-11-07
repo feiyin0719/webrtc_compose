@@ -9,14 +9,16 @@ import com.iffly.webrtc_compose.App
 import com.iffly.webrtc_compose.data.repo.net.ServiceCreator
 import com.iffly.webrtc_compose.socket.SocketManager
 import com.iffly.webrtc_compose.viewmodel.BaseMVIViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
 
 enum class LoginStateEnum {
     Login, Logout, Logining
 }
 
-
-class AppViewModel :
+@HiltViewModel
+class AppViewModel @Inject constructor(val name: String) :
     BaseMVIViewModel<AppViewModel.AppState, AppViewModel.AppAction>(AppState::class.java) {
     data class AppAction(
         val action: AppActionValue,

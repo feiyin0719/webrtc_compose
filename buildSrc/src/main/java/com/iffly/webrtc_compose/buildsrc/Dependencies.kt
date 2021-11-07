@@ -57,6 +57,14 @@ object Libs {
             const val iconsExtended = "androidx.compose.material:material-icons-extended:$version"
             const val uiTest = "androidx.compose.ui:ui-test-junit4:$version"
             const val liveData = "androidx.compose.runtime:runtime-livedata:$version"
+            const val hiltCompose = "androidx.hilt:hilt-navigation-compose:1.0.0-alpha03"
+        }
+
+        object Hilt {
+            const val version = "2.37"
+            const val hilt = "com.google.dagger:hilt-android:$version"
+            const val hiltKapt = "com.google.dagger:hilt-compiler:$version"
+            const val hiltClassPath = "com.google.dagger:hilt-android-gradle-plugin:$version"
         }
 
         object Activity {

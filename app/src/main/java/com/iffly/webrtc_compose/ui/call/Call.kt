@@ -3,7 +3,6 @@ package com.iffly.webrtc_compose.ui.call
 import android.Manifest
 import android.app.Activity
 import androidx.activity.ComponentActivity
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,14 +15,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.iffly.rtcchat.CallEndReason
 import com.iffly.rtcchat.CallSessionCallback
 import com.iffly.rtcchat.CallState
 import com.iffly.rtcchat.SkyEngineKit
 import com.iffly.webrtc_compose.ui.theme.Typography
-import com.iffly.webrtc_compose.viewmodel.app.AppViewModel
-import com.iffly.webrtc_compose.viewmodel.app.appViewModel
 import com.iffly.webrtc_compose.viewmodel.call.CallViewModel
 import com.iffly.webrtc_compose.viewmodel.call.CallViewModel.CallViewAction
 import com.iffly.webrtc_compose.viewmodel.call.CallViewModel.CallViewAction.Companion.PERMISSION_KEY
@@ -33,7 +30,7 @@ const val CALL_ROUTE = "call/call"
 
 @Composable
 fun CallScreen(outGoing: Boolean = false, userId: String = "", back: (() -> Unit)? = null) {
-    val callViewModel: CallViewModel = viewModel()
+    val callViewModel: CallViewModel = hiltViewModel()
     var init by remember {
         mutableStateOf(true)
     }
@@ -53,8 +50,8 @@ fun CallScreen(outGoing: Boolean = false, userId: String = "", back: (() -> Unit
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
                 )
             )
-            if(activity is ComponentActivity){
-                activity.onBackPressedDispatcher.addCallback(lifecycleOwner){
+            if (activity is ComponentActivity) {
+                activity.onBackPressedDispatcher.addCallback(lifecycleOwner) {
                     isEnabled = true
                 }
             }

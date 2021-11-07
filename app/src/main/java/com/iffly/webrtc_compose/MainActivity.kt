@@ -10,7 +10,10 @@ import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
 import com.iffly.webrtc_compose.ui.WebrtcApp
 import com.iffly.webrtc_compose.viewmodel.app.AppViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     val appViewModel: AppViewModel by viewModels<AppViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {

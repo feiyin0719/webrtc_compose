@@ -3,10 +3,12 @@ package com.iffly.webrtc_compose.viewmodel.home
 import com.iffly.webrtc_compose.data.bean.UserItem
 import com.iffly.webrtc_compose.data.repo.net.UserRepo
 import com.iffly.webrtc_compose.viewmodel.BaseMVIViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
+import javax.inject.Inject
 
-
-class UserViewModel :
+@HiltViewModel
+class UserViewModel@Inject constructor() :
     BaseMVIViewModel<UserViewModel.UserViewState, UserViewModel.UserViewAction>(UserViewState::class.java) {
     data class UserViewState(val loading: Boolean = true, val list: List<UserItem> = emptyList())
 

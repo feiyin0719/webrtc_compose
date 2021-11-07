@@ -3,10 +3,12 @@ package com.iffly.webrtc_compose.viewmodel.home
 import com.iffly.webrtc_compose.data.bean.ChatRoomItem
 import com.iffly.webrtc_compose.data.repo.net.UserRepo
 import com.iffly.webrtc_compose.viewmodel.BaseMVIViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
+import javax.inject.Inject
 
-
-class ChatRoomViewModel :
+@HiltViewModel
+class ChatRoomViewModel@Inject constructor() :
     BaseMVIViewModel<ChatRoomViewModel.ChatRoomViewState, ChatRoomViewModel.ChatRoomAction>(
         ChatRoomViewState::class.java
     ) {
