@@ -8,12 +8,6 @@ import com.iffly.rtcchat.engine.EngineCallback
 import com.iffly.rtcchat.engine.webrtc.WebRtcEngine
 import com.iffly.rtcchat.inter.ISkyEvent
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.buffer
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.sample
 import org.webrtc.IceCandidate
 import org.webrtc.SessionDescription
 import java.lang.ref.WeakReference
@@ -40,9 +34,6 @@ class CallSession(
     private var sessionCallback: WeakReference<CallSessionCallback>? = null
     private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val coroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
-
-    private val channel: Channel<Pair<String, IceCandidate?>> =
-        Channel(10, BufferOverflow.DROP_OLDEST)
 
 
     //------------------------------------各种参数----------------------------------------------/
@@ -373,7 +364,17 @@ class CallSession(
 
     override fun onSendIceCandidate(userId: String, candidate: IceCandidate?) {
         coroutineScope.launch {
-            channel.send(Pair(userId, candidate))
+            //must block,other job need wait the job complete
+            Thread.sleep(100)
+            candidate?.let {
+                Log.d("dds_test", "onSendIceCandidate")
+                mEvent.sendIceCandidate(
+                    userId,
+                    candidate.sdpMid,
+                    candidate.sdpMLineIndex,
+                    candidate.sdp
+                )
+            }
         }
     }
 
@@ -418,20 +419,5 @@ class CallSession(
 
     init {
         iEngine.init(this)
-        coroutineScope.launch {
-            channel.consumeAsFlow()
-                .buffer(10, BufferOverflow.DROP_OLDEST)
-                .sample(100).collect {
-                    it.second?.let { candidate ->
-                        Log.d("dds_test", "onSendIceCandidate")
-                        mEvent.sendIceCandidate(
-                            it.first,
-                            candidate.sdpMid,
-                            candidate.sdpMLineIndex,
-                            candidate.sdp
-                        )
-                    }
-                }
-        }
     }
 }
